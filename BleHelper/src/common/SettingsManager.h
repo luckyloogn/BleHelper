@@ -47,8 +47,17 @@ public:
     Q_INVOKABLE void saveLanguage(const QString &language);
     void initTranslator(QQmlEngine *engine);
 
+    /* Bluetooth */
+    Q_INVOKABLE int scanTimeout();
+    Q_INVOKABLE void saveScanTimeout(int timeout);
+    const QHash<QString, QString> favoriteDevices();
+    void saveFavoriteDevices(const QHash<QString, QString> &devices);
+
 private:
     explicit SettingsManager(QObject *parent = nullptr);
+
+    const QHash<QString, QString> loadHash(const QString &key);
+    void saveHash(const QString &key, const QHash<QString, QString> &hash);
 
     void createLanguagesMap();
     void updateSupportedLanguages();

@@ -17,6 +17,30 @@ SettingsManager::SettingsManager(QObject *parent) : QObject(parent)
 
 SettingsManager::~SettingsManager() = default;
 
+const QHash<QString, QString> SettingsManager::loadHash(const QString &key)
+{
+    QString jsonString = _settings->value(key, "{}").toString();
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonString.toUtf8());
+    QJsonObject jsonObject = jsonDoc.object();
+
+    QHash<QString, QString> hash;
+    for (auto it = jsonObject.begin(); it != jsonObject.end(); ++it) {
+        hash.insert(it.key(), it.value().toString());
+    }
+    return hash;
+}
+
+void SettingsManager::saveHash(const QString &key, const QHash<QString, QString> &hash)
+{
+    QJsonObject jsonObject;
+    for (auto it = hash.begin(); it != hash.end(); ++it) {
+        jsonObject.insert(it.key(), it.value());
+    }
+
+    QString jsonString = QString(QJsonDocument(jsonObject).toJson(QJsonDocument::Compact));
+    _settings->setValue(key, jsonString);
+}
+
 /* Window Size */
 bool SettingsManager::isWindowMaximized()
 {
@@ -192,4 +216,25 @@ QString SettingsManager::getCurrentLanguageResourcePath()
 {
     QString fileName = QStringLiteral("%1/%2.qm").arg(_translationsResourcePath, _currentLanguage);
     return fileName;
+}
+
+/* Bluetooth */
+Q_INVOKABLE int SettingsManager::scanTimeout()
+{
+    return _settings->value("scanTimeout", QVariant(15000)).toInt();
+}
+
+Q_INVOKABLE void SettingsManager::saveScanTimeout(int timeout)
+{
+    _settings->setValue("scanTimeout", timeout);
+}
+
+const QHash<QString, QString> SettingsManager::favoriteDevices()
+{
+    return loadHash("favoriteDevices");
+}
+
+void SettingsManager::saveFavoriteDevices(const QHash<QString, QString> &devices)
+{
+    saveHash("favoriteDevices", devices);
 }

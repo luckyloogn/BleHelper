@@ -396,6 +396,73 @@ FluScrollablePage {
             }
         }
 
+        /* Bluetooth */
+        FluText {
+            Layout.bottomMargin: 5
+            Layout.topMargin: 15
+            font: FluTextStyle.BodyStrong
+            text: qsTr("Bluetooth")
+        }
+        FluFrame {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 70
+            padding: 16
+
+            FluText {
+                text: qsTr("Scan Timeout")
+
+                anchors {
+                    left: parent.left
+                    verticalCenter: parent.verticalCenter
+                }
+            }
+            MyFluComboBox {
+                textRole: "text"
+                valueRole: "value"
+                width: Math.max(180, implicitWidth)
+
+                model: ListModel {
+                    ListElement {
+                        text: qsTr("15 Seconds")
+                        value: 15000
+                    }
+                    ListElement {
+                        text: qsTr("1 Minute")
+                        value: 60000
+                    }
+                    ListElement {
+                        text: qsTr("2 Minutes")
+                        value: 120000
+                    }
+                    ListElement {
+                        text: qsTr("5 Minutes")
+                        value: 300000
+                    }
+                    ListElement {
+                        text: qsTr("10 Minutes")
+                        value: 600000
+                    }
+                    ListElement {
+                        text: qsTr("No Timeout")
+                        value: 0 // If timeout is 0 the discovery runs until stop() is called.
+                    }
+                }
+
+                Component.onCompleted: {
+                    currentIndex = indexOfValue(ClientManager.scanTimeout);
+                }
+                onActivated: {
+                    ClientManager.scanTimeout = currentValue;
+                    SettingsManager.saveScanTimeout(currentValue);
+                }
+
+                anchors {
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
+                }
+            }
+        }
+
         /* About */
         FluText {
             Layout.bottomMargin: 5
@@ -453,7 +520,6 @@ FluScrollablePage {
                         text: qsTr("Dependencies & References")
                     }
                     MyFluTextButton {
-                        Layout.bottomMargin: 12
                         Layout.leftMargin: 12
                         Layout.topMargin: 4
                         horizontalPadding: 4
@@ -462,6 +528,27 @@ FluScrollablePage {
 
                         onClicked: {
                             Qt.openUrlExternally("https://github.com/zhuzichu520/FluentUI");
+                        }
+                    }
+                    MyFluTextButton {
+                        Layout.leftMargin: 12
+                        horizontalPadding: 4
+                        text: "heartrate-game"
+                        verticalPadding: 4
+
+                        onClicked: {
+                            Qt.openUrlExternally("https://github.com/qt/qtconnectivity/tree/dev/examples/bluetooth/heartrate-game");
+                        }
+                    }
+                    MyFluTextButton {
+                        Layout.bottomMargin: 12
+                        Layout.leftMargin: 12
+                        horizontalPadding: 4
+                        text: "lowenergyscanner"
+                        verticalPadding: 4
+
+                        onClicked: {
+                            Qt.openUrlExternally("https://github.com/qt/qtconnectivity/tree/dev/examples/bluetooth/lowenergyscanner");
                         }
                     }
                 }

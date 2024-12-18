@@ -10,6 +10,7 @@
 #include <QUrl>
 
 #include "ApplicationInfo.h"
+#include "ClientManager.h"
 #include "SettingsManager.h"
 
 #define MODULE_URI "BleHelper"
@@ -58,6 +59,23 @@ int main(int argc, char *argv[])
                 Q_UNUSED(scriptEngine)
                 return SettingsManager::getInstance();
             });
+
+    qmlRegisterSingletonType<ClientManager>(
+            MODULE_URI, MODULE_VERSION_MAJOR, MODULE_VERSION_MINOR, "ClientManager",
+            [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+                Q_UNUSED(engine)
+                Q_UNUSED(scriptEngine)
+                return ClientManager::getInstance();
+            });
+
+    qmlRegisterType<DeviceInfo>(MODULE_URI, MODULE_VERSION_MAJOR, MODULE_VERSION_MINOR,
+                                "DeviceInfo");
+    qmlRegisterType<ServiceInfo>(MODULE_URI, MODULE_VERSION_MAJOR, MODULE_VERSION_MINOR,
+                                 "ServiceInfo");
+    qmlRegisterType<CharacteristicInfo>(MODULE_URI, MODULE_VERSION_MAJOR, MODULE_VERSION_MINOR,
+                                        "CharacteristicInfo");
+    qmlRegisterType<DescriptorInfo>(MODULE_URI, MODULE_VERSION_MAJOR, MODULE_VERSION_MINOR,
+                                    "DescriptorInfo");
 
     const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     QObject::connect(

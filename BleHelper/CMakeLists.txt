@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 导入Qt相关依赖包
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick)
+find_package(Qt6 REQUIRED COMPONENTS Bluetooth Core Gui Quick)
 
 # 获取当前构建时间
 string(TIMESTAMP BUILD_DATE_TIME "%Y-%m-%d %H:%M:%S")
@@ -105,11 +105,12 @@ qt_add_resources(
 target_include_directories(
   ${PROJECT_NAME}
   PRIVATE ${CMAKE_SOURCE_DIR}/FluentUI ${CMAKE_CURRENT_SOURCE_DIR}/src
+          ${CMAKE_CURRENT_SOURCE_DIR}/src/ble
           ${CMAKE_CURRENT_SOURCE_DIR}/src/common)
 
 # 目标文件链接库
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Quick
-                                              fluentuiplugin)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Bluetooth Qt6::Core Qt6::Gui
+                                              Qt6::Quick fluentuiplugin)
 
 if(${QT_VERSION} VERSION_LESS 6.1.0)
   set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER
