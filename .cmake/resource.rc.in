@@ -1,0 +1,40 @@
+#include <windows.h>
+
+IDI_ICON1	ICON	"${CMAKE_SOURCE_DIR}/BleHelper/resources/images/icons/logo.ico"
+
+VS_VERSION_INFO VERSIONINFO
+	FILEVERSION ${MAJOR_VERSION},${MINOR_VERSION},${PATCH_VERSION},${GIT_CURRENT_HEAD_COMMIT_COUNT}
+	PRODUCTVERSION ${MAJOR_VERSION},${MINOR_VERSION},${PATCH_VERSION},${GIT_CURRENT_HEAD_COMMIT_COUNT}
+	FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+	FILEFLAGS VS_FF_DEBUG
+#else
+	FILEFLAGS 0x0L
+#endif
+	FILEOS VOS_NT_WINDOWS32
+	FILETYPE VFT_DLL
+	FILESUBTYPE VFT2_UNKNOWN
+	BEGIN
+		BLOCK "StringFileInfo"
+		BEGIN
+			BLOCK "000404b0"
+			BEGIN
+				VALUE "CompanyName", "\0"
+				VALUE "FileDescription", "${PROJECT_DESCRIPTION}\0"
+				VALUE "FileVersion", "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}.${GIT_CURRENT_HEAD_COMMIT_COUNT}\0"
+				VALUE "LegalCopyright", "Copyright (C) ${AUTHOR}. All rights reserved.\0"
+				VALUE "OriginalFilename", "${PROJECT_NAME}.exe\0"
+				VALUE "ProductName", "${PROJECT_NAME}\0"
+				VALUE "ProductVersion", "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}.${GIT_CURRENT_HEAD_COMMIT_COUNT}\0"
+				VALUE "InternalName", "\0"
+				VALUE "Comments", "\0"
+				VALUE "LegalTrademarks", "\0"
+			END
+		END
+		BLOCK "VarFileInfo"
+		BEGIN
+			VALUE "Translation", 0x0004, 1200
+		END
+	END
+/* End of Version info */
+
