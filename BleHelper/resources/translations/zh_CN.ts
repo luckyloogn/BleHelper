@@ -478,32 +478,32 @@
 <context>
     <name>RenameAttributePopup</name>
     <message>
-        <location filename="../../qml/components/RenameAttributePopup.qml" line="99"/>
+        <location filename="../../qml/components/RenameAttributePopup.qml" line="102"/>
         <source>Rename</source>
         <translation type="unfinished">重命名</translation>
     </message>
     <message>
-        <location filename="../../qml/components/RenameAttributePopup.qml" line="130"/>
+        <location filename="../../qml/components/RenameAttributePopup.qml" line="131"/>
         <source>Enter new name</source>
         <translation type="unfinished">输入新名称</translation>
     </message>
     <message>
-        <location filename="../../qml/components/RenameAttributePopup.qml" line="147"/>
+        <location filename="../../qml/components/RenameAttributePopup.qml" line="148"/>
         <source>Cancel</source>
         <translation type="unfinished">取消</translation>
     </message>
     <message>
-        <location filename="../../qml/components/RenameAttributePopup.qml" line="155"/>
+        <location filename="../../qml/components/RenameAttributePopup.qml" line="156"/>
         <source>Save</source>
         <translation type="unfinished">保存</translation>
     </message>
     <message>
-        <location filename="../../qml/components/RenameAttributePopup.qml" line="95"/>
+        <location filename="../../qml/components/RenameAttributePopup.qml" line="98"/>
         <source>Rename Service</source>
         <translation type="unfinished">重命名服务</translation>
     </message>
     <message>
-        <location filename="../../qml/components/RenameAttributePopup.qml" line="97"/>
+        <location filename="../../qml/components/RenameAttributePopup.qml" line="100"/>
         <source>Rename Characteristic</source>
         <translation type="unfinished">重命名特征</translation>
     </message>

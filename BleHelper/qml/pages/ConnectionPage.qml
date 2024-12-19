@@ -16,7 +16,7 @@ FluPage {
     title: qsTr("Connection")
 
     RenameAttributePopup {
-        id: attribute_rename_popup
+        id: rename_attribute_popup
 
         onSaveButtonClicked: function (attributeUuid, newName, attributeType, attributeInfo) {
             ClientManager.renameAttribute(attributeInfo, newName);
@@ -168,7 +168,7 @@ FluPage {
                                         verticalPadding: 4
 
                                         onClicked: {
-                                            attribute_rename_popup.showWithInfo(this, characteristic_item.info);
+                                            rename_attribute_popup.showWithInfo(this, characteristic_item.info);
                                         }
                                     }
                                     Item {
@@ -327,7 +327,7 @@ FluPage {
                                 verticalPadding: 4
 
                                 onClicked: {
-                                    attribute_rename_popup.showWithInfo(this, service_item.info);
+                                    rename_attribute_popup.showWithInfo(this, service_item.info);
                                 }
                             }
                             FluText {

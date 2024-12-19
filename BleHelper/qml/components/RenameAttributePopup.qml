@@ -18,41 +18,46 @@ MyFluPopup {
     signal saveButtonClicked(string attributeUuid, string newName, int attributeType, QtObject attributeInfo)
 
     /**
-     * 显示。
-     * @param {QtObject} context - 上下文, 在哪里调用show, 就传入它的id, 或者传入this。
-     * @param {string} uuid - uuid。
-     * @param {string} currentName - 当前名称。
-     * @param {int} attributeType - 重命名对象。支持以下值：
+     * 显示
+     * @param {QtObject} context - 上下文, 在哪里调用show, 就传入它的id, 或者传入this
+     * @param {string} uuid - uuid
+     * @param {string} currentName - 当前名称
+     * @param {int} attributeType - 重命名对象. 支持以下值:
      *   - ClientManager.Service
      *   - ClientManager.Characteristic
-     * @returns {void} 无返回值。
+     * @returns {void} 无返回值
      */
     function show(context: QtObject, uuid: string, currentName: string, attributeType: int) {
         // 计算弹出位置
-        var parentPos = context.mapToItem(popup.parent, context.x, context.y);
-        var popupX = parentPos.x + popup.leftMargin;
+        var contextWidth = Math.max(context.width, context.implicitWidth);
+        var contextHeight = Math.max(context.height, context.implicitHeight);
+        var contextPosInParent = context.mapToItem(popup.parent, 0, 0);
+        var popupX = contextPosInParent.x + popup.leftMargin;
         if (popupX + popup.width > popup.parent.width) {
-            popupX = parentPos.x + context.width - popup.width - popup.rightMargin; // 如果右方空间不够，在左方弹出
+            // 如果右方空间不够，在左方弹出
+            popupX = contextPosInParent.x + contextWidth - popup.width - popup.rightMargin;
         }
-        var popupY = parentPos.y + context.height + popup.topMargin;
+        var popupY = contextPosInParent.y + contextHeight + popup.topMargin;
         if (popupY + popup.height > popup.parent.height) {
-            popupY = parentPos.y - popup.height - popup.bottomMargin; // 如果下方空间不够，在上方弹出
+            // 如果下方空间不够，在上方弹出
+            popupY = contextPosInParent.y - popup.height - popup.bottomMargin;
         }
+
         popup.x = popupX;
         popup.y = popupY;
 
         // 赋值
         popup.attributeUuid = uuid;
-        popup_input.text = currentName;
+        new_name_text_box.text = currentName;
         popup.attributeType = attributeType;
         popup.open();
     }
 
     /**
-     * 显示。
-     * @param {QtObject} context - 上下文, 在哪里调用show, 就传入它的id, 或者传入this。
-     * @param {QtObject} info - ServiceInfo 或者 CharacteristicInfo (传入modelData)。
-     * @returns {void} 无返回值。
+     * 显示
+     * @param {QtObject} context - 上下文, 在哪里调用show, 就传入它的id, 或者传入this
+     * @param {QtObject} info - ServiceInfo 或者 CharacteristicInfo (传入 modelData)
+     * @returns {void} 无返回值
      */
     function showWithInfo(context: QtObject, info: QtObject) {
         var attributeType = ClientManager.Unknown;
@@ -65,16 +70,15 @@ MyFluPopup {
         popup.show(context, info.uuid, info.name, attributeType);
     }
 
-    bottomMargin: -4
+    bottomMargin: 4
     height: implicitHeight
-    leftMargin: 0
-    rightMargin: 4
     spacing: 0
     topMargin: 4
     width: 325
 
     onClosed: {
         popup.attributeUuid = "";
+        new_name_text_box.text = "";
         popup.attributeType = ClientManager.Unknown;
         popup.attributeInfo = null;
     }
@@ -85,11 +89,10 @@ MyFluPopup {
 
         /* 标题 */
         FluText {
-            Layout.alignment: Qt.AlignVCenter
-            Layout.fillWidth: true
             Layout.leftMargin: 16
             Layout.rightMargin: 16
-            Layout.topMargin: 8
+            Layout.topMargin: 16
+            font: FluTextStyle.BodyStrong
             text: {
                 if (attributeType === ClientManager.Service) {
                     return qsTr("Rename Service");
@@ -104,14 +107,13 @@ MyFluPopup {
             Layout.fillWidth: true
             Layout.leftMargin: 16
             Layout.rightMargin: 16
-            Layout.topMargin: 2
-            color: FluColors.Grey120
+            color: FluTheme.fontSecondaryColor
+            elide: Text.ElideRight
             text: popup.attributeUuid
         }
 
         /* 分界线 */
         FluDivider {
-            Layout.bottomMargin: 8
             Layout.fillWidth: true
             Layout.leftMargin: 8
             Layout.rightMargin: 8
@@ -120,13 +122,12 @@ MyFluPopup {
 
         /* 输入框 */
         FluTextBox {
-            id: popup_input
+            id: new_name_text_box
 
-            Layout.alignment: Qt.AlignVCenter
             Layout.fillWidth: true
             Layout.leftMargin: 16
             Layout.rightMargin: 16
-            Layout.topMargin: 8
+            Layout.topMargin: 16
             placeholderText: qsTr("Enter new name")
         }
 
@@ -155,7 +156,7 @@ MyFluPopup {
                 text: qsTr("Save")
 
                 onClicked: {
-                    popup.saveButtonClicked(popup.attributeUuid, popup_input.text, popup.attributeType, popup.attributeInfo);
+                    popup.saveButtonClicked(popup.attributeUuid, new_name_text_box.text, popup.attributeType, popup.attributeInfo);
                     popup.close();
                 }
             }
