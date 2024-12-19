@@ -653,15 +653,21 @@ Button {
                                 }
 
                                 validator: RegularExpressionValidator {
-                                    regularExpression: /^[0-9A-Fa-f]{8}$/
+                                    regularExpression: {
+                                        if (control.isAlphaEnabled) {
+                                            return /^[0-9A-Fa-f]{8}$/;
+                                        }
+                                        return /^[0-9A-Fa-f]{6}$/;
+                                    }
                                 }
 
                                 onTextEdited: {
                                     if (text !== "") {
-                                        var colorString = text_box_hex.text.padStart(8, "0");
-                                        var red = parseInt(colorString.substring(2, 4), 16) / 255;
-                                        var green = parseInt(colorString.substring(4, 6), 16) / 255;
-                                        var blue = parseInt(colorString.substring(6, 8), 16) / 255;
+                                        var len = control.isAlphaEnabled ? 8 : 6;
+                                        var colorString = text_box_hex.text.padStart(len, "0");
+                                        var red = parseInt(colorString.substring(len - 6, len - 4), 16) / 255;
+                                        var green = parseInt(colorString.substring(len - 4, len - 2), 16) / 255;
+                                        var blue = parseInt(colorString.substring(len - 2, len), 16) / 255;
                                         var alpha = 1;
                                         if (control.isAlphaEnabled) {
                                             alpha = parseInt(colorString.substring(0, 2), 16) / 255;
