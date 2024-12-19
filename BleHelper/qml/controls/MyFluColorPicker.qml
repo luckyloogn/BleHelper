@@ -640,7 +640,7 @@ Button {
                                 Layout.fillWidth: true
                                 visible: combo_box_color_spec.visible
                             }
-                            FluTextBox {
+                            MyFluTextBox {
                                 id: text_box_hex
 
                                 Layout.preferredWidth: 136
@@ -696,7 +696,7 @@ Button {
                                 return control.isColorChannelTextInputVisible && more_button.checked;
                             }
 
-                            FluTextBox {
+                            MyFluTextBox {
                                 id: text_box_red_hue
 
                                 width: 120
@@ -737,7 +737,7 @@ Button {
                                 return control.isColorChannelTextInputVisible && more_button.checked;
                             }
 
-                            FluTextBox {
+                            MyFluTextBox {
                                 id: text_box_green_saturation
 
                                 width: 120
@@ -778,7 +778,7 @@ Button {
                                 return control.isColorChannelTextInputVisible && more_button.checked;
                             }
 
-                            FluTextBox {
+                            MyFluTextBox {
                                 id: text_box_blue_value
 
                                 width: 120
@@ -819,7 +819,7 @@ Button {
                                 return control.isAlphaEnabled && control.isAlphaTextInputVisible && more_button.checked;
                             }
 
-                            FluTextBox {
+                            MyFluTextBox {
                                 id: text_box_alpha
 
                                 width: 120

@@ -121,7 +121,7 @@ MyFluPopup {
         }
 
         /* 输入框 */
-        FluTextBox {
+        MyFluTextBox {
             id: new_name_text_box
 
             Layout.fillWidth: true

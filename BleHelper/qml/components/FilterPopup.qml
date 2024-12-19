@@ -110,7 +110,7 @@ MyFluPopup {
                 iconSize: 16
                 iconSource: MyFluIcon.DeviceName
             }
-            FluTextBox {
+            MyFluTextBox {
                 id: name_text_box
 
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
@@ -123,7 +123,7 @@ MyFluPopup {
                 iconSize: 16
                 iconSource: MyFluIcon.DeviceAddress
             }
-            FluTextBox {
+            MyFluTextBox {
                 id: address_text_box
 
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
