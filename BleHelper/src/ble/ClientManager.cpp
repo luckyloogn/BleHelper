@@ -249,7 +249,7 @@ void ClientManager::refreshAttributeName(const QString &uuid, AttributeType type
         if (_isUuidNameMappingEnabled && _serviceUuidDictionary.contains(uuid)) {
             newName = _serviceUuidDictionary[uuid];
         } else {
-            newName = Utils::getAttributeName(srvInfo->getQLowEnergyService());
+            newName = Utils::getAttributeName(srvInfo->service());
         }
         srvInfo->name(newName);
     } else if (AttributeType::Characteristic == type) {
@@ -262,7 +262,7 @@ void ClientManager::refreshAttributeName(const QString &uuid, AttributeType type
                 if (_isUuidNameMappingEnabled && _characteristicUuidDictionary.contains(uuid)) {
                     newName = _characteristicUuidDictionary[uuid];
                 } else {
-                    newName = Utils::getAttributeName(charInfo->getQLowEnergyCharacteristic());
+                    newName = Utils::getAttributeName(charInfo->characteristic());
                 }
                 charInfo->name(newName);
                 break;
@@ -501,7 +501,7 @@ void ClientManager::refreshAllAttributesName()
         if (_isUuidNameMappingEnabled && _serviceUuidDictionary.contains(srvUuid)) {
             newName = _serviceUuidDictionary[srvUuid];
         } else {
-            newName = Utils::getAttributeName(srvInfo->getQLowEnergyService());
+            newName = Utils::getAttributeName(srvInfo->service());
         }
         srvInfo->name(newName);
 
@@ -513,7 +513,7 @@ void ClientManager::refreshAllAttributesName()
             if (_isUuidNameMappingEnabled && _characteristicUuidDictionary.contains(charUuid)) {
                 newName = _characteristicUuidDictionary[charUuid];
             } else {
-                newName = Utils::getAttributeName(charInfo->getQLowEnergyCharacteristic());
+                newName = Utils::getAttributeName(charInfo->characteristic());
             }
             charInfo->name(newName);
         }
@@ -875,7 +875,7 @@ void ClientManager::serviceScanFinished()
 
     auto srvInfos = _allServices.values();
     for (auto info : srvInfos) {
-        auto srv = info->getQLowEnergyService();
+        auto srv = info->service();
 
         connect(srv, &QLowEnergyService::errorOccurred, this, &ClientManager::serviceError);
         connect(srv, &QLowEnergyService::stateChanged, this, &ClientManager::serviceStateChanged);

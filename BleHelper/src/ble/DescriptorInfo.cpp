@@ -14,7 +14,7 @@ DescriptorInfo::DescriptorInfo(const QLowEnergyDescriptor &d)
     uuid(Utils::uuidToString(d.uuid()));
 }
 
-QLowEnergyDescriptor DescriptorInfo::getQLowEnergyDescriptor() const
+const QLowEnergyDescriptor &DescriptorInfo::descriptor() const
 {
     return _descriptor;
 }

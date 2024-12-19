@@ -18,7 +18,7 @@ public:
     DescriptorInfo() = default;
     DescriptorInfo(const QLowEnergyDescriptor &d);
 
-    QLowEnergyDescriptor getQLowEnergyDescriptor() const;
+    const QLowEnergyDescriptor &descriptor() const;
 
 private:
     QLowEnergyDescriptor _descriptor;

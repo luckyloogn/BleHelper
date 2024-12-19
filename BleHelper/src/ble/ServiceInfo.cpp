@@ -32,7 +32,7 @@ ServiceInfo::ServiceInfo(QLowEnergyService *s)
     }
 }
 
-QLowEnergyService *ServiceInfo::getQLowEnergyService() const
+QLowEnergyService *ServiceInfo::service() const
 {
     return _service;
 }

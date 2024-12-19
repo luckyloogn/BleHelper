@@ -24,7 +24,7 @@ public:
     CharacteristicInfo() = default;
     CharacteristicInfo(const QLowEnergyCharacteristic &c);
 
-    QLowEnergyCharacteristic getQLowEnergyCharacteristic() const;
+    const QLowEnergyCharacteristic &characteristic() const;
 
 private:
     QLowEnergyCharacteristic _characteristic;

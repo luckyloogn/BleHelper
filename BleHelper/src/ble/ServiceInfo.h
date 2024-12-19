@@ -18,7 +18,7 @@ public:
     ServiceInfo() = default;
     ServiceInfo(QLowEnergyService *s);
 
-    QLowEnergyService *getQLowEnergyService() const;
+    QLowEnergyService *service() const;
 
 private:
     QLowEnergyService *_service = nullptr;

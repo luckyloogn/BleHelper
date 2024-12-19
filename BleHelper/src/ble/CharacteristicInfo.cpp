@@ -64,7 +64,7 @@ CharacteristicInfo::CharacteristicInfo(const QLowEnergyCharacteristic &c)
     properties(tmp);
 }
 
-QLowEnergyCharacteristic CharacteristicInfo::getQLowEnergyCharacteristic() const
+const QLowEnergyCharacteristic &CharacteristicInfo::characteristic() const
 {
     return _characteristic;
 }
