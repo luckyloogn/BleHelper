@@ -119,6 +119,64 @@
     </message>
 </context>
 <context>
+    <name>FilterPopup</name>
+    <message>
+        <location filename="../../qml/components/FilterPopup.qml" line="71"/>
+        <source>Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/FilterPopup.qml" line="78"/>
+        <source>Clear</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/FilterPopup.qml" line="119"/>
+        <source>Filter by name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/FilterPopup.qml" line="132"/>
+        <source>Filter by address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/FilterPopup.qml" line="160"/>
+        <source>≥</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/FilterPopup.qml" line="168"/>
+        <source>dBm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/FilterPopup.qml" line="187"/>
+        <source>Favorites</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/FilterPopup.qml" line="195"/>
+        <source>Connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/FilterPopup.qml" line="203"/>
+        <source>Paired</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/FilterPopup.qml" line="221"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/FilterPopup.qml" line="229"/>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
         <location filename="../../qml/windows/MainWindow.qml" line="22"/>
@@ -487,203 +545,164 @@
 <context>
     <name>ScannerPage</name>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="15"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="16"/>
         <source>Scanner</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="31"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="32"/>
         <source>Successfully paired with &quot;%1&quot;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="33"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="34"/>
         <source>Successfully unpaired with &quot;%1&quot;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="57"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="58"/>
         <source>Tip</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="54"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="55"/>
         <source>This application cannot be used without Bluetooth. Please switch Bluetooth ON to continue.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="56"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="57"/>
         <source>Turn on Bluetooth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="55"/>
-        <location filename="../../qml/pages/ScannerPage.qml" line="76"/>
-        <location filename="../../qml/pages/ScannerPage.qml" line="337"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="56"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="77"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="127"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="128"/>
         <source>&quot;%1&quot; has been deleted from the favorites.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="130"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="131"/>
         <source>&quot;%1&quot; has been inserted to the favorites.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="388"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="184"/>
         <source>Bluetooth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="400"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="196"/>
         <source>On</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="400"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="196"/>
         <source>Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="447"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="243"/>
         <source>Find devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="475"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="271"/>
         <source>Stop Scanning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="477"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="273"/>
         <source>Start Scanning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="698"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="494"/>
         <source>More Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="186"/>
-        <location filename="../../qml/pages/ScannerPage.qml" line="526"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="322"/>
         <source>Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="193"/>
-        <source>Clear</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="235"/>
-        <source>Filter by name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="248"/>
-        <source>Filter by address</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="276"/>
-        <source>≥</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="284"/>
-        <source>dBm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="303"/>
-        <source>Favorites</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="311"/>
-        <location filename="../../qml/pages/ScannerPage.qml" line="656"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="452"/>
         <source>Connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="319"/>
-        <location filename="../../qml/pages/ScannerPage.qml" line="668"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="464"/>
         <source>Paired</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="345"/>
-        <source>Apply</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="513"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="309"/>
         <source>Devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="538"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="334"/>
         <source>Sort by RSSI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="543"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="339"/>
         <source>Sort by RSSI in descending order.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="77"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="78"/>
         <source>Connecting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="75"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="76"/>
         <source>Connecting to &quot;%1&quot;...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="117"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="118"/>
         <source>Unfavorite</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="117"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="118"/>
         <source>Favorite</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="136"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="137"/>
         <source>Unpair</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="136"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="137"/>
         <source>Pair</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="633"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="429"/>
         <source> dBm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="644"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="440"/>
         <source>Favorited</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="683"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="479"/>
         <source>Connect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="683"/>
-        <location filename="../../qml/pages/ScannerPage.qml" line="688"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="479"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="484"/>
         <source>Disconnect</source>
         <translation type="unfinished"></translation>
     </message>

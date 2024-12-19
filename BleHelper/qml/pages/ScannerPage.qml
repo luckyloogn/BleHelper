@@ -6,6 +6,7 @@ import QtQuick.Window
 import BleHelper
 import FluentUI
 
+import "../components"
 import "../controls"
 
 FluPage {
@@ -150,213 +151,8 @@ FluPage {
             }
         }
     }
-    MyFluPopup {
+    FilterPopup {
         id: filter_popup
-
-        height: implicitHeight
-        parent: filter_button
-        spacing: 0
-        width: implicitWidth
-        x: parent.width - width
-        y: parent.height + 5
-
-        onOpened: {
-            // Popup 不会每次都重新实例化（即不会重新创建其内容）
-            filter_by_name_text_box.text = ClientManager.filterParams.name;
-            filter_by_address_text_box.text = ClientManager.filterParams.address;
-            filter_by_rssi_slider.value = ClientManager.filterParams.rssiValue;
-            filter_is_only_favourite_check_box.checked = ClientManager.filterParams.isOnlyFavourite;
-            filter_is_only_connected_check_box.checked = ClientManager.filterParams.isOnlyConnected;
-            filter_is_only_paired_check_box.checked = ClientManager.filterParams.isOnlyPaired;
-        }
-
-        ColumnLayout {
-            anchors.fill: parent
-            spacing: 0
-
-            /* 标题 清除按钮 */
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.leftMargin: 16
-                Layout.rightMargin: 16
-                Layout.topMargin: 8
-
-                FluText {
-                    Layout.alignment: Qt.AlignVCenter
-                    text: qsTr("Filter")
-                }
-                Item {
-                    Layout.fillWidth: true // 占位符，用于推开两侧的元素
-                }
-                FluTextButton {
-                    Layout.alignment: Qt.AlignVCenter
-                    text: qsTr("Clear")
-
-                    onClicked: {
-                        filter_by_name_text_box.text = "";
-                        filter_by_address_text_box.text = "";
-                        filter_by_rssi_slider.value = filter_by_rssi_slider.from;
-                        filter_is_only_favourite_check_box.checked = false;
-                        filter_is_only_connected_check_box.checked = false;
-                        filter_is_only_paired_check_box.checked = false;
-                    }
-                }
-            }
-            FluDivider {
-                Layout.bottomMargin: 8
-                Layout.fillWidth: true
-                Layout.leftMargin: 8
-                Layout.rightMargin: 8
-                Layout.topMargin: 8
-            }
-
-            /* 过滤项目 */
-            GridLayout {
-                Layout.fillWidth: true
-                Layout.leftMargin: 16
-                Layout.rightMargin: 16
-                Layout.topMargin: 8
-                columnSpacing: 16
-                columns: 4
-                rowSpacing: 8
-                rows: 4
-
-                MyFluIcon {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    iconSize: 16
-                    iconSource: MyFluIcon.DeviceName
-                }
-                FluTextBox {
-                    id: filter_by_name_text_box
-
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                    Layout.columnSpan: 3
-                    Layout.fillWidth: true
-                    placeholderText: qsTr("Filter by name")
-                }
-                MyFluIcon {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    iconSize: 16
-                    iconSource: MyFluIcon.DeviceAddress
-                }
-                FluTextBox {
-                    id: filter_by_address_text_box
-
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                    Layout.columnSpan: 3
-                    Layout.fillWidth: true
-                    placeholderText: qsTr("Filter by address")
-                }
-                MyFluIcon {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    iconSize: 16
-                    iconSource: MyFluIcon.DeviceRssi
-                }
-                FluSlider {
-                    id: filter_by_rssi_slider
-
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                    Layout.bottomMargin: 8
-                    Layout.columnSpan: 2
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    Layout.topMargin: 8
-                    from: -130
-                    padding: 0
-                    to: 0
-                    tooltipEnabled: false
-                }
-                Item {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-                    Layout.fillHeight: true
-                    Layout.leftMargin: 4
-                    width: 72
-
-                    FluText {
-                        text: qsTr("≥")
-
-                        anchors {
-                            left: parent.left
-                            verticalCenter: parent.verticalCenter
-                        }
-                    }
-                    FluText {
-                        text: filter_by_rssi_slider.value + qsTr("dBm")
-
-                        anchors {
-                            right: parent.right
-                            verticalCenter: parent.verticalCenter
-                        }
-                    }
-                }
-                MyFluIcon {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    iconSize: 16
-                    iconSource: MyFluIcon.State
-                }
-                FluCheckBox {
-                    id: filter_is_only_favourite_check_box
-
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                    Layout.fillWidth: true
-                    checked: ClientManager.filterParams.isOnlyFavourite
-                    text: qsTr("Favorites")
-                }
-                FluCheckBox {
-                    id: filter_is_only_connected_check_box
-
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    Layout.fillWidth: true
-                    checked: ClientManager.filterParams.isOnlyConnected
-                    text: qsTr("Connected")
-                }
-                FluCheckBox {
-                    id: filter_is_only_paired_check_box
-
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-                    Layout.fillWidth: true
-                    checked: ClientManager.filterParams.isOnlyPaired
-                    text: qsTr("Paired")
-                }
-            }
-
-            /* 取消 应用按钮 */
-            RowLayout {
-                Layout.bottomMargin: 16
-                Layout.fillWidth: true
-                Layout.leftMargin: 16
-                Layout.rightMargin: 16
-                Layout.topMargin: 16
-                spacing: 24
-
-                Item {
-                    Layout.fillWidth: true // 占位符推送按钮到右边
-                }
-                FluTextButton {
-                    Layout.alignment: Qt.AlignVCenter
-                    text: qsTr("Cancel")
-
-                    onClicked: {
-                        filter_popup.close();
-                    }
-                }
-                FluFilledButton {
-                    Layout.alignment: Qt.AlignVCenter
-                    text: qsTr("Apply")
-
-                    onClicked: {
-                        filter_popup.close();
-                        ClientManager.filterParams.name = filter_by_name_text_box.text;
-                        ClientManager.filterParams.address = filter_by_address_text_box.text;
-                        ClientManager.filterParams.rssiValue = filter_by_rssi_slider.value;
-                        ClientManager.filterParams.isOnlyFavourite = filter_is_only_favourite_check_box.checked;
-                        ClientManager.filterParams.isOnlyConnected = filter_is_only_connected_check_box.checked;
-                        ClientManager.filterParams.isOnlyPaired = filter_is_only_paired_check_box.checked;
-                        ClientManager.updateFilteredDevices();
-                    }
-                }
-            }
-        }
     }
     FluFrame {
         id: bluetooth_control_container
@@ -527,7 +323,7 @@ FluPage {
                 verticalPadding: 4
 
                 onClicked: {
-                    filter_popup.open();
+                    filter_popup.show(this);
                 }
             }
             MyFluIconButton {
