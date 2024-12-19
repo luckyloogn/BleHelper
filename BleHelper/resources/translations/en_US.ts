@@ -510,6 +510,39 @@
     </message>
 </context>
 <context>
+    <name>MyFluTextBoxMenu</name>
+    <message>
+        <location filename="../../qml/controls/MyFluTextBoxMenu.qml" line="82"/>
+        <source>Cut</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/controls/MyFluTextBoxMenu.qml" line="148"/>
+        <source>Copy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/controls/MyFluTextBoxMenu.qml" line="214"/>
+        <source>Paste</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/controls/MyFluTextBoxMenu.qml" line="280"/>
+        <source>Undo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/controls/MyFluTextBoxMenu.qml" line="346"/>
+        <source>Redo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/controls/MyFluTextBoxMenu.qml" line="400"/>
+        <source>Select All</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RenameAttributePopup</name>
     <message>
         <location filename="../../qml/components/RenameAttributePopup.qml" line="102"/>
