@@ -16,9 +16,10 @@ Popup {
     margins: 0
     modal: false
     padding: 0
+    parent: Overlay.overlay
     spacing: 0
-    x: Math.round((d.parentWidth - width) / 2)
-    y: Math.round((d.parentHeight - height) / 2)
+    x: Math.round((parent.width - width) / 2)
+    y: Math.round((parent.height - height) / 2)
 
     Overlay.modal: Rectangle {
         color: FluTools.withOpacity(control.palette.shadow, 0.5)
@@ -51,23 +52,6 @@ Popup {
             from: 1
             property: "opacity"
             to: 0
-        }
-    }
-
-    QtObject {
-        id: d
-
-        property int parentHeight: {
-            if (control.parent) {
-                return control.parent.height;
-            }
-            return control.height;
-        }
-        property int parentWidth: {
-            if (control.parent) {
-                return control.parent.width;
-            }
-            return control.width;
         }
     }
 }
