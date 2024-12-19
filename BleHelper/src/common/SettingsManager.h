@@ -50,8 +50,15 @@ public:
     /* Bluetooth */
     Q_INVOKABLE int scanTimeout();
     Q_INVOKABLE void saveScanTimeout(int timeout);
+    Q_INVOKABLE bool isUuidNameMappingEnabled();
+    Q_INVOKABLE void saveUuidNameMappingEnabled(bool enable);
+
     const QHash<QString, QString> favoriteDevices();
     void saveFavoriteDevices(const QHash<QString, QString> &devices);
+    const QHash<QString, QString> serviceUuidDictionary();
+    void saveServiceUuidDictionary(const QHash<QString, QString> &uuidDictionary);
+    const QHash<QString, QString> characteristicUuidDictionary();
+    void saveCharacteristicUuidDictionary(const QHash<QString, QString> &uuidDictionary);
 
 private:
     explicit SettingsManager(QObject *parent = nullptr);

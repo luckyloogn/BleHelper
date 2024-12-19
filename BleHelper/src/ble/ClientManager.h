@@ -30,6 +30,7 @@ class ClientManager : public BaseClass
     Q_PROPERTY_AUTO_P(FilterParams *, filterParams)
     Q_PROPERTY_READONLY_AUTO(bool, isDeviceConnected)
     Q_PROPERTY_AUTO_P(DeviceInfo *, connectedDeviceInfo)
+    Q_PROPERTY_AUTO(bool, isUuidNameMappingEnabled)
 
     Q_PROPERTY(bool isBluetoothOn READ isBluetoothOn NOTIFY isBluetoothOnChanged)
     Q_PROPERTY(bool isScanning READ isScanning NOTIFY isScanningChanged)
@@ -39,6 +40,11 @@ class ClientManager : public BaseClass
     Q_PROPERTY(QVariant services READ services NOTIFY servicesChanged)
     Q_PROPERTY(QVariantMap characteristics READ characteristics NOTIFY characteristicsChanged)
     Q_PROPERTY(QVariantMap descriptors READ descriptors NOTIFY descriptorsChanged)
+
+    Q_PROPERTY(QVariantList serviceUuidDictionary READ serviceUuidDictionary NOTIFY
+                       serviceUuidDictionaryChanged)
+    Q_PROPERTY(QVariantList characteristicUuidDictionary READ characteristicUuidDictionary NOTIFY
+                       characteristicUuidDictionaryChanged)
 
 public:
     enum Error {
@@ -56,6 +62,8 @@ public:
         UnknownError
     };
     Q_ENUM(Error)
+    enum AttributeType { Unknown = 0x00, Service = 0x01, Characteristic = 0x02, Descriptor = 0x04 };
+    Q_ENUM(AttributeType)
 
     SINGLETON(ClientManager);
     ~ClientManager() override;
@@ -73,6 +81,15 @@ public:
     Q_INVOKABLE void updateFilteredDevices();
     Q_INVOKABLE void connectToDevice(const QString &address);
     Q_INVOKABLE void disconnectFromDevice();
+    Q_INVOKABLE void renameAttribute(ServiceInfo *srvInfo, const QString &newName);
+    Q_INVOKABLE void renameAttribute(CharacteristicInfo *charInfo, const QString &newName);
+    Q_INVOKABLE void refreshAttributeName(const QString &uuid, AttributeType type);
+    Q_INVOKABLE void upsertAttributeToUuidDictionary(const QString &uuid, const QString &name,
+                                                     AttributeType type);
+    Q_INVOKABLE void deleteAttributeFromUuidDictionary(const QString &uuid, AttributeType type);
+    Q_INVOKABLE void deleteAllAttributesFromUuidDictionary(AttributeType type);
+    Q_INVOKABLE bool importUuidDictionary(const QString &fileName);
+    Q_INVOKABLE bool exportUuidDictionary(const QString &fileName);
 
     bool isBluetoothOn() const;
     bool isScanning() const;
@@ -82,6 +99,12 @@ public:
     QVariant services() const;
     QVariantMap characteristics() const;
     QVariantMap descriptors() const;
+
+    QVariantList serviceUuidDictionary() const;
+    QVariantList characteristicUuidDictionary() const;
+
+public slots:
+    Q_INVOKABLE void refreshAllAttributesName();
 
 signals:
     void errorOccurred(Error error);
@@ -95,12 +118,16 @@ signals:
     void characteristicsChanged();
     void descriptorsChanged();
 
+    void serviceUuidDictionaryChanged();
+    void characteristicUuidDictionaryChanged();
+
 private:
     explicit ClientManager(QObject *parent = nullptr);
 
     void initializeVariables();
 
     void loadFavouriteDevices();
+    void loadUuidDictionary();
 
     void initLocalDevice();
     void initDeviceDiscoveryAgent();
@@ -157,4 +184,7 @@ private:
             _allCharacteristics; // {srvUuid, {charUuid, CharacteristicInfo *}}
     QHash<QString, QMap<QString, DescriptorInfo *>>
             _allDescriptors; // {charUuid, {descUuid, DescriptorInfo *}}
+
+    QHash<QString, QString> _serviceUuidDictionary; // {uuid, name}
+    QHash<QString, QString> _characteristicUuidDictionary; // {uuid, name}
 };

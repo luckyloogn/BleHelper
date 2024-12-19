@@ -6,6 +6,7 @@ import QtQuick.Window
 import BleHelper
 import FluentUI
 
+import "../components"
 import "../controls"
 
 FluPage {
@@ -14,6 +15,13 @@ FluPage {
     padding: 0
     title: qsTr("Connection")
 
+    RenameAttributePopup {
+        id: attribute_rename_popup
+
+        onSaveButtonClicked: function (attributeUuid, newName, attributeType, attributeInfo) {
+            ClientManager.renameAttribute(attributeInfo, newName);
+        }
+    }
     FluFrame {
         id: connected_device_info_container
 
@@ -97,7 +105,7 @@ FluPage {
             MyFluExpander {
                 id: service_item
 
-                property bool canRename: info ? info.canRename : false
+                property bool canRename: info ? info.canRename && ClientManager.isUuidNameMappingEnabled : false
                 property ServiceInfo info: modelData
                 property string name: info ? info.name : ""
                 property string type: info ? info.type : ""
@@ -135,7 +143,7 @@ FluPage {
                                 property bool canIndicate: info ? info.canIndicate : false
                                 property bool canNotify: info ? info.canNotify : false
                                 property bool canRead: info ? info.canRead : false
-                                property bool canRename: info ? info.canRename : false
+                                property bool canRename: info ? info.canRename && ClientManager.isUuidNameMappingEnabled : false
                                 property bool canWrite: info ? info.canWrite : false
                                 property bool canWriteNoResponse: info ? info.canWriteNoResponse : false
                                 property CharacteristicInfo info: modelData
@@ -160,8 +168,7 @@ FluPage {
                                         verticalPadding: 4
 
                                         onClicked: {
-                                            // TODO
-                                            console.log("Rename Characteristic: " + characteristic_item.uuid);
+                                            attribute_rename_popup.showWithInfo(this, characteristic_item.info);
                                         }
                                     }
                                     Item {
@@ -320,8 +327,7 @@ FluPage {
                                 verticalPadding: 4
 
                                 onClicked: {
-                                    // TODO
-                                    console.log("Rename Service: " + service_item.uuid);
+                                    attribute_rename_popup.showWithInfo(this, service_item.info);
                                 }
                             }
                             FluText {

@@ -376,6 +376,20 @@ FluWindow {
                             nav_view.push(url);
                         }
                     }
+                    FluPaneItem {
+                        menuDelegate: nav_item_right_button_menu_component
+                        title: qsTr("Manage UUID Dictionary")
+                        url: "qrc:/qml/pages/ManageUuidDictionaryPage.qml"
+
+                        iconDelegate: FluIcon {
+                            iconSize: 16
+                            iconSource: FluentIcons.Dictionary
+                        }
+
+                        onTap: {
+                            nav_view.push(url);
+                        }
+                    }
                 }
 
                 Component.onCompleted: {

@@ -6,7 +6,9 @@ DescriptorInfo::DescriptorInfo(const QLowEnergyDescriptor &d)
     _descriptor = d;
 
     /* name */
-    name(d.name());
+    _name = Utils::getAttributeName(d, &_canRename);
+    emit nameChanged();
+    emit canRenameChanged();
 
     /* uuid */
     uuid(Utils::uuidToString(d.uuid()));

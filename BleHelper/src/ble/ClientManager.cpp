@@ -1,3 +1,8 @@
+#include <QFile>
+#include <QHash>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QTimer>
 
 #include "ClientManager.h"
@@ -8,6 +13,7 @@ ClientManager::ClientManager(QObject *parent) : BaseClass(parent)
     initializeVariables();
 
     loadFavouriteDevices();
+    loadUuidDictionary();
 
     initLocalDevice();
     initDeviceDiscoveryAgent();
@@ -214,6 +220,192 @@ void ClientManager::disconnectFromDevice()
     }
 }
 
+void ClientManager::renameAttribute(ServiceInfo *srvInfo, const QString &newName)
+{
+    if (srvInfo) {
+        upsertAttributeToUuidDictionary(srvInfo->uuid(), newName, AttributeType::Service);
+        srvInfo->name(newName);
+    }
+}
+
+void ClientManager::renameAttribute(CharacteristicInfo *charInfo, const QString &newName)
+{
+    if (charInfo) {
+        upsertAttributeToUuidDictionary(charInfo->uuid(), newName, AttributeType::Characteristic);
+        charInfo->name(newName);
+    }
+}
+
+void ClientManager::refreshAttributeName(const QString &uuid, AttributeType type)
+{
+    if (!_isDeviceConnected) {
+        return;
+    }
+
+    QString newName;
+
+    if (AttributeType::Service == type && _allServices.contains(uuid)) {
+        ServiceInfo *srvInfo = _allServices[uuid];
+        if (_isUuidNameMappingEnabled && _serviceUuidDictionary.contains(uuid)) {
+            newName = _serviceUuidDictionary[uuid];
+        } else {
+            newName = Utils::getAttributeName(srvInfo->getQLowEnergyService());
+        }
+        srvInfo->name(newName);
+    } else if (AttributeType::Characteristic == type) {
+        for (auto it = _allServices.begin(); it != _allServices.end(); ++it) {
+            QString srvUuid = it.key();
+
+            QMap<QString, CharacteristicInfo *> charInfos = _allCharacteristics[srvUuid];
+            if (charInfos.contains(uuid)) {
+                CharacteristicInfo *charInfo = charInfos[uuid];
+                if (_isUuidNameMappingEnabled && _characteristicUuidDictionary.contains(uuid)) {
+                    newName = _characteristicUuidDictionary[uuid];
+                } else {
+                    newName = Utils::getAttributeName(charInfo->getQLowEnergyCharacteristic());
+                }
+                charInfo->name(newName);
+                break;
+            }
+        }
+    }
+}
+
+void ClientManager::upsertAttributeToUuidDictionary(const QString &uuid, const QString &name,
+                                                    AttributeType type)
+{
+    if (AttributeType::Service == type) {
+        _serviceUuidDictionary[uuid] = name;
+        emit serviceUuidDictionaryChanged();
+
+        _settingsManager->saveServiceUuidDictionary(_serviceUuidDictionary);
+    } else if (AttributeType::Characteristic == type) {
+        _characteristicUuidDictionary[uuid] = name;
+        emit characteristicUuidDictionaryChanged();
+
+        _settingsManager->saveCharacteristicUuidDictionary(_characteristicUuidDictionary);
+    }
+}
+
+void ClientManager::deleteAttributeFromUuidDictionary(const QString &uuid, AttributeType type)
+{
+    if (AttributeType::Service == type && _serviceUuidDictionary.contains(uuid)) {
+        _serviceUuidDictionary.remove(uuid);
+        emit serviceUuidDictionaryChanged();
+
+        _settingsManager->saveServiceUuidDictionary(_serviceUuidDictionary);
+    } else if (AttributeType::Characteristic == type
+               && _characteristicUuidDictionary.contains(uuid)) {
+        _characteristicUuidDictionary.remove(uuid);
+        emit characteristicUuidDictionaryChanged();
+
+        _settingsManager->saveCharacteristicUuidDictionary(_characteristicUuidDictionary);
+    }
+}
+
+void ClientManager::deleteAllAttributesFromUuidDictionary(AttributeType type)
+{
+    if (AttributeType::Service & type) {
+        _serviceUuidDictionary.clear();
+        emit serviceUuidDictionaryChanged();
+
+        _settingsManager->saveServiceUuidDictionary(_serviceUuidDictionary);
+    }
+
+    if (AttributeType::Characteristic & type) {
+        _characteristicUuidDictionary.clear();
+        emit characteristicUuidDictionaryChanged();
+
+        _settingsManager->saveCharacteristicUuidDictionary(_characteristicUuidDictionary);
+    }
+}
+
+bool ClientManager::importUuidDictionary(const QString &fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        showWarning("Failed to open file for reading: %s", fileName.toStdString().c_str());
+        return false;
+    }
+
+    QByteArray fileData = file.readAll();
+    file.close();
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+    if (jsonDoc.isNull() || !jsonDoc.isArray()) {
+        showWarning("Invalid JSON format or not an array");
+        return false;
+    }
+
+    QJsonArray jsonArray = jsonDoc.array();
+    for (const QJsonValue &value : jsonArray) {
+        if (value.isObject()) {
+            QJsonObject jsonObject = value.toObject();
+
+            QString uuid = jsonObject["uuid"].toString().toUpper();
+            QString name = jsonObject["name"].toString();
+            int type = jsonObject["type"].toInt();
+
+            if (type == AttributeType::Service) {
+                _serviceUuidDictionary[uuid] = name;
+            } else if (type == AttributeType::Characteristic) {
+                _characteristicUuidDictionary[uuid] = name;
+            } else {
+                showWarning("Unknown attribute type %d for UUID %s", type,
+                            uuid.toStdString().c_str());
+            }
+        }
+    }
+
+    emit serviceUuidDictionaryChanged();
+    emit characteristicUuidDictionaryChanged();
+
+    _settingsManager->saveServiceUuidDictionary(_serviceUuidDictionary);
+    _settingsManager->saveCharacteristicUuidDictionary(_characteristicUuidDictionary);
+
+    showInfo("Successfully imported the UUID dictionary from JSON file: %s",
+             fileName.toStdString().c_str());
+
+    return true;
+}
+
+bool ClientManager::exportUuidDictionary(const QString &fileName)
+{
+    QJsonArray jsonArray;
+
+    for (auto it = _serviceUuidDictionary.begin(); it != _serviceUuidDictionary.end(); ++it) {
+        QJsonObject jsonObject;
+        jsonObject["uuid"] = it.key().toUpper();
+        jsonObject["name"] = it.value();
+        jsonObject["type"] = AttributeType::Service;
+        jsonArray.append(jsonObject);
+    }
+
+    for (auto it = _characteristicUuidDictionary.begin(); it != _characteristicUuidDictionary.end();
+         ++it) {
+        QJsonObject jsonObject;
+        jsonObject["uuid"] = it.key().toUpper();
+        jsonObject["name"] = it.value();
+        jsonObject["type"] = AttributeType::Characteristic;
+        jsonArray.append(jsonObject);
+    }
+
+    QJsonDocument jsonDocument(jsonArray);
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        showWarning("Failed to open file for writing: %s", fileName.toStdString().c_str());
+        return false;
+    }
+
+    file.write(jsonDocument.toJson(QJsonDocument::Indented));
+    file.close();
+
+    showInfo("Successfully exported the UUID dictionary: %s", fileName.toStdString().c_str());
+
+    return true;
+}
+
 bool ClientManager::isBluetoothOn() const
 {
     return _localDevice && _localDevice->isValid()
@@ -269,6 +461,65 @@ QVariantMap ClientManager::descriptors() const
     return descs;
 }
 
+QVariantList ClientManager::serviceUuidDictionary() const
+{
+    QVariantList variantList;
+    for (auto it = _serviceUuidDictionary.begin(); it != _serviceUuidDictionary.end(); ++it) {
+        QVariantMap item;
+        item["uuid"] = it.key();
+        item["name"] = it.value();
+        variantList.append(item);
+    }
+    return variantList;
+}
+
+QVariantList ClientManager::characteristicUuidDictionary() const
+{
+    QVariantList variantList;
+    for (auto it = _characteristicUuidDictionary.begin(); it != _characteristicUuidDictionary.end();
+         ++it) {
+        QVariantMap item;
+        item["uuid"] = it.key();
+        item["name"] = it.value();
+        variantList.append(item);
+    }
+    return variantList;
+}
+
+void ClientManager::refreshAllAttributesName()
+{
+    if (!_isDeviceConnected) {
+        return;
+    }
+
+    for (auto it = _allServices.begin(); it != _allServices.end(); ++it) {
+        QString srvUuid = it.key();
+        ServiceInfo *srvInfo = it.value();
+
+        QString newName;
+
+        if (_isUuidNameMappingEnabled && _serviceUuidDictionary.contains(srvUuid)) {
+            newName = _serviceUuidDictionary[srvUuid];
+        } else {
+            newName = Utils::getAttributeName(srvInfo->getQLowEnergyService());
+        }
+        srvInfo->name(newName);
+
+        QMap<QString, CharacteristicInfo *> chars = _allCharacteristics[srvUuid];
+        for (auto charIt = chars.begin(); charIt != chars.end(); ++charIt) {
+            QString charUuid = charIt.key();
+            CharacteristicInfo *charInfo = charIt.value();
+
+            if (_isUuidNameMappingEnabled && _characteristicUuidDictionary.contains(charUuid)) {
+                newName = _characteristicUuidDictionary[charUuid];
+            } else {
+                newName = Utils::getAttributeName(charInfo->getQLowEnergyCharacteristic());
+            }
+            charInfo->name(newName);
+        }
+    }
+}
+
 void ClientManager::initializeVariables()
 {
     filterParams(new FilterParams(this));
@@ -280,12 +531,22 @@ void ClientManager::initializeVariables()
 
     scanTimeout(_settingsManager->scanTimeout());
     connect(this, &ClientManager::scanTimeoutChanged, this, &ClientManager::updateScanTimeout);
+
+    isUuidNameMappingEnabled(_settingsManager->isUuidNameMappingEnabled());
+    connect(this, &ClientManager::isUuidNameMappingEnabledChanged, this,
+            &ClientManager::refreshAllAttributesName);
 }
 
 void ClientManager::loadFavouriteDevices()
 {
     _favoriteDevices = _settingsManager->favoriteDevices();
     emit favoriteDevicesChanged();
+}
+
+void ClientManager::loadUuidDictionary()
+{
+    _serviceUuidDictionary = _settingsManager->serviceUuidDictionary();
+    _characteristicUuidDictionary = _settingsManager->characteristicUuidDictionary();
 }
 
 void ClientManager::initLocalDevice()
@@ -584,6 +845,11 @@ void ClientManager::addService(const QBluetoothUuid &serviceUuid)
 
     ServiceInfo *srvInfo = new ServiceInfo(service);
     auto srvUuid = srvInfo->uuid();
+
+    if (_isUuidNameMappingEnabled && _serviceUuidDictionary.contains(srvUuid)) {
+        srvInfo->name(_serviceUuidDictionary[srvUuid]);
+    }
+
     if (_allServices.contains(srvUuid)) {
         auto oldSrv = _allServices[srvUuid];
         _allServices[srvUuid] = srvInfo;
@@ -690,6 +956,11 @@ void ClientManager::serviceStateChanged(QLowEnergyService::ServiceState state)
         for (auto &ch : chars) {
             auto charInfo = new CharacteristicInfo(ch);
             auto charUuid = charInfo->uuid();
+
+            if (_isUuidNameMappingEnabled && _characteristicUuidDictionary.contains(charUuid)) {
+                charInfo->name(_characteristicUuidDictionary[charUuid]);
+            }
+
             _allCharacteristics[srvUuid][charUuid] = charInfo;
 
             auto descs = ch.descriptors();

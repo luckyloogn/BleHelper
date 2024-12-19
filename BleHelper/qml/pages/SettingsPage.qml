@@ -462,6 +462,37 @@ FluScrollablePage {
                 }
             }
         }
+        FluFrame {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 70
+            padding: 16
+
+            FluText {
+                text: qsTr("Enable UUID Name Mapping")
+
+                anchors {
+                    left: parent.left
+                    verticalCenter: parent.verticalCenter
+                }
+            }
+            FluToggleSwitch {
+                id: use_uuid_name_mapping_toggle_switch
+
+                checked: ClientManager.isUuidNameMappingEnabled
+                text: checked ? qsTr("On") : qsTr("Off")
+                textRight: false
+
+                onClicked: {
+                    ClientManager.isUuidNameMappingEnabled = checked;
+                    SettingsManager.saveUuidNameMappingEnabled(checked);
+                }
+
+                anchors {
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
+                }
+            }
+        }
 
         /* About */
         FluText {

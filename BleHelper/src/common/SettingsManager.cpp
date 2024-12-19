@@ -229,6 +229,16 @@ Q_INVOKABLE void SettingsManager::saveScanTimeout(int timeout)
     _settings->setValue("scanTimeout", timeout);
 }
 
+bool SettingsManager::isUuidNameMappingEnabled()
+{
+    return _settings->value("isUuidNameMappingEnabled", QVariant(true)).toBool();
+}
+
+void SettingsManager::saveUuidNameMappingEnabled(bool enable)
+{
+    _settings->setValue("isUuidNameMappingEnabled", enable);
+}
+
 const QHash<QString, QString> SettingsManager::favoriteDevices()
 {
     return loadHash("favoriteDevices");
@@ -237,4 +247,25 @@ const QHash<QString, QString> SettingsManager::favoriteDevices()
 void SettingsManager::saveFavoriteDevices(const QHash<QString, QString> &devices)
 {
     saveHash("favoriteDevices", devices);
+}
+
+const QHash<QString, QString> SettingsManager::serviceUuidDictionary()
+{
+    return loadHash("serviceUuidDictionary");
+}
+
+void SettingsManager::saveServiceUuidDictionary(const QHash<QString, QString> &uuidDictionary)
+{
+    saveHash("serviceUuidDictionary", uuidDictionary);
+}
+
+const QHash<QString, QString> SettingsManager::characteristicUuidDictionary()
+{
+    return loadHash("characteristicUuidDictionary");
+}
+
+void SettingsManager::saveCharacteristicUuidDictionary(
+        const QHash<QString, QString> &uuidDictionary)
+{
+    saveHash("characteristicUuidDictionary", uuidDictionary);
 }

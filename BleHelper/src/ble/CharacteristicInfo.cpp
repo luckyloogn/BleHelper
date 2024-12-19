@@ -9,14 +9,9 @@ CharacteristicInfo::CharacteristicInfo(const QLowEnergyCharacteristic &c)
     _characteristic = c;
 
     /* name */
-    QString charName = c.name();
-    if (charName.isEmpty()) {
-        name("Unknown Characteristic");
-        canRename(true);
-    } else {
-        name(charName);
-        canRename(false);
-    }
+    _name = Utils::getAttributeName(c, &_canRename);
+    emit nameChanged();
+    emit canRenameChanged();
 
     /* uuid */
     uuid(Utils::uuidToString(c.uuid()));

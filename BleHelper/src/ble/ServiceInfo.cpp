@@ -11,12 +11,9 @@ ServiceInfo::ServiceInfo(QLowEnergyService *s)
     _service->setParent(this);
 
     /* name */
-    name(s->serviceName());
-    if (s->serviceName() == "Unknown Service" || s->serviceName().isEmpty()) {
-        canRename(true);
-    } else {
-        canRename(false);
-    }
+    _name = Utils::getAttributeName(s, &_canRename);
+    emit nameChanged();
+    emit canRenameChanged();
 
     /* uuid */
     uuid(Utils::uuidToString(s->serviceUuid()));
