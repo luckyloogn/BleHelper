@@ -62,6 +62,15 @@ CharacteristicInfo::CharacteristicInfo(const QLowEnergyCharacteristic &c)
         tmp.removeAt(0);
     }
     properties(tmp);
+
+    /* value */
+    valueHex("");
+    valueAscii("");
+    valueDecimal("");
+
+    /* indications & notifications settings */
+    enableIndications(false);
+    enableNotifications(false);
 }
 
 const QLowEnergyCharacteristic &CharacteristicInfo::characteristic() const

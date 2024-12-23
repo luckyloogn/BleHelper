@@ -22,6 +22,13 @@ FluPage {
             ClientManager.renameAttribute(attributeInfo, newName);
         }
     }
+    WriteCharacteristicPopup {
+        id: write_characteristic_popup
+
+        onSendButtonClicked: function (serviceInfo, characteristicInfo, hexEncoded, writeMode) {
+            ClientManager.writeCharacteristic(serviceInfo, characteristicInfo, hexEncoded, writeMode);
+        }
+    }
     FluFrame {
         id: connected_device_info_container
 
@@ -146,10 +153,15 @@ FluPage {
                                 property bool canRename: info ? info.canRename && ClientManager.isUuidNameMappingEnabled : false
                                 property bool canWrite: info ? info.canWrite : false
                                 property bool canWriteNoResponse: info ? info.canWriteNoResponse : false
+                                property bool enableIndications: info ? info.enableIndications : false
+                                property bool enableNotifications: info ? info.enableNotifications : false
                                 property CharacteristicInfo info: modelData
                                 property string name: info ? info.name : ""
                                 property string properties: info ? info.properties : ""
                                 property string uuid: info ? info.uuid : ""
+                                property string valueAscii: info ? info.valueAscii : ""
+                                property string valueDecimal: info ? info.valueDecimal : ""
+                                property string valueHex: info ? info.valueHex : ""
 
                                 Layout.fillWidth: true
                                 spacing: 0
@@ -178,28 +190,30 @@ FluPage {
                                         Layout.alignment: Qt.AlignVCenter
                                         Layout.margins: -4
                                         display: Button.TextBesideIcon
+                                        iconColor: textColor
                                         iconSize: 12
                                         iconSource: MyFluIcon.Indicate
                                         text: qsTr("Indicate")
+                                        textColor: characteristic_item.enableIndications ? FluTheme.primaryColor : FluTheme.fontPrimaryColor
                                         visible: characteristic_item.canIndicate
 
                                         onClicked: {
-                                            // TODO
-                                            console.log("Indicate Characteristic: " + characteristic_item.uuid);
+                                            ClientManager.toggleIndications(service_item.info, characteristic_item.info);
                                         }
                                     }
                                     MyFluIconButton {
                                         Layout.alignment: Qt.AlignVCenter
                                         Layout.margins: -4
                                         display: Button.TextBesideIcon
+                                        iconColor: textColor
                                         iconSize: 12
                                         iconSource: MyFluIcon.Notify
                                         text: qsTr("Notify")
+                                        textColor: characteristic_item.enableNotifications ? FluTheme.primaryColor : FluTheme.fontPrimaryColor
                                         visible: characteristic_item.canNotify
 
                                         onClicked: {
-                                            // TODO
-                                            console.log("Notify Characteristic: " + characteristic_item.uuid);
+                                            ClientManager.toggleNotifications(service_item.info, characteristic_item.info);
                                         }
                                     }
                                     MyFluIconButton {
@@ -212,8 +226,7 @@ FluPage {
                                         visible: characteristic_item.canRead
 
                                         onClicked: {
-                                            // TODO
-                                            console.log("Read Characteristic: " + characteristic_item.uuid);
+                                            ClientManager.readCharacteristic(service_item.info, characteristic_item.info);
                                         }
                                     }
                                     MyFluIconButton {
@@ -226,8 +239,7 @@ FluPage {
                                         visible: characteristic_item.canWrite || characteristic_item.canWriteNoResponse
 
                                         onClicked: {
-                                            // TODO
-                                            console.log("Write Characteristic: " + characteristic_item.uuid);
+                                            write_characteristic_popup.show(this, service_item.info, characteristic_item.info);
                                         }
                                     }
                                 }
@@ -241,7 +253,58 @@ FluPage {
                                 }
                                 FluText {
                                     color: FluColors.Grey120
-                                    text: "Descriptors: "
+                                    text: qsTr("Value: ")
+                                    visible: characteristic_item.valueHex !== ""
+                                }
+                                GridLayout {
+                                    Layout.fillWidth: true
+                                    Layout.leftMargin: 16
+                                    columnSpacing: 0
+                                    columns: 2
+                                    rowSpacing: 0
+                                    rows: 3
+                                    visible: characteristic_item.valueHex !== ""
+
+                                    FluText {
+                                        Layout.alignment: Qt.AlignTop
+                                        color: FluColors.Grey120
+                                        text: qsTr("Hex: ")
+                                    }
+                                    MyFluCopyableText {
+                                        Layout.alignment: Qt.AlignTop
+                                        Layout.fillWidth: true
+                                        color: FluColors.Grey120
+                                        text: characteristic_item.valueHex
+                                        wrapMode: Text.WrapAnywhere
+                                    }
+                                    FluText {
+                                        Layout.alignment: Qt.AlignTop
+                                        color: FluColors.Grey120
+                                        text: qsTr("ASCII: ")
+                                    }
+                                    MyFluCopyableText {
+                                        Layout.alignment: Qt.AlignTop
+                                        Layout.fillWidth: true
+                                        color: FluColors.Grey120
+                                        text: characteristic_item.valueAscii
+                                        wrapMode: Text.WrapAnywhere
+                                    }
+                                    FluText {
+                                        Layout.alignment: Qt.AlignTop
+                                        color: FluColors.Grey120
+                                        text: qsTr("Decimal: ")
+                                    }
+                                    MyFluCopyableText {
+                                        Layout.alignment: Qt.AlignTop
+                                        Layout.fillWidth: true
+                                        color: FluColors.Grey120
+                                        text: characteristic_item.valueDecimal
+                                        wrapMode: Text.WrapAnywhere
+                                    }
+                                }
+                                FluText {
+                                    color: FluColors.Grey120
+                                    text: qsTr("Descriptors: ")
                                     visible: descriptors_repeater.count > 0
                                 }
                                 Repeater {
@@ -255,8 +318,7 @@ FluPage {
                                         required property var modelData
 
                                         Layout.fillWidth: true
-                                        Layout.leftMargin: 8
-                                        Layout.topMargin: 4
+                                        Layout.leftMargin: 16
                                         spacing: 0
 
                                         RowLayout {
@@ -265,6 +327,7 @@ FluPage {
                                             property DescriptorInfo info: modelData
                                             property string name: info ? info.name : ""
                                             property string uuid: info ? info.uuid : ""
+                                            property string value: info ? info.value : ""
 
                                             Layout.fillWidth: true
                                             spacing: 8
@@ -285,14 +348,18 @@ FluPage {
                                                 text: qsTr("Read")
 
                                                 onClicked: {
-                                                    // TODO
-                                                    console.log("Read Descriptor: " + descriptor_item.uuid);
+                                                    ClientManager.readDescriptor(service_item.info, descriptor_item.info);
                                                 }
                                             }
                                         }
                                         FluText {
                                             color: FluColors.Grey120
                                             text: qsTr("UUID: ") + descriptor_item.uuid
+                                        }
+                                        FluText {
+                                            color: FluColors.Grey120
+                                            text: qsTr("Value: ") + descriptor_item.value
+                                            visible: descriptor_item.value !== ""
                                         }
                                     }
                                 }

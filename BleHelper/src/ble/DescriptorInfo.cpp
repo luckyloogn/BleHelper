@@ -12,6 +12,9 @@ DescriptorInfo::DescriptorInfo(const QLowEnergyDescriptor &d)
 
     /* uuid */
     uuid(Utils::uuidToString(d.uuid()));
+
+    /* value */
+    value("");
 }
 
 const QLowEnergyDescriptor &DescriptorInfo::descriptor() const

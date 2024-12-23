@@ -64,6 +64,11 @@ public:
     Q_ENUM(Error)
     enum AttributeType { Unknown = 0x00, Service = 0x01, Characteristic = 0x02, Descriptor = 0x04 };
     Q_ENUM(AttributeType)
+    enum WriteMode {
+        WriteWithResponse,
+        WriteWithoutResponse,
+    };
+    Q_ENUM(WriteMode)
 
     SINGLETON(ClientManager);
     ~ClientManager() override;
@@ -90,6 +95,16 @@ public:
     Q_INVOKABLE void deleteAllAttributesFromUuidDictionary(AttributeType type);
     Q_INVOKABLE bool importUuidDictionary(const QString &fileName);
     Q_INVOKABLE bool exportUuidDictionary(const QString &fileName);
+    Q_INVOKABLE void readCharacteristic(const ServiceInfo *srvInfo,
+                                        const CharacteristicInfo *charInfo);
+    Q_INVOKABLE void writeCharacteristic(const ServiceInfo *srvInfo,
+                                         const CharacteristicInfo *charInfo,
+                                         const QByteArray &hexEncoded, WriteMode writeMode);
+    Q_INVOKABLE void toggleNotifications(const ServiceInfo *srvInfo,
+                                         const CharacteristicInfo *charInfo);
+    Q_INVOKABLE void toggleIndications(const ServiceInfo *srvInfo,
+                                       const CharacteristicInfo *charInfo);
+    Q_INVOKABLE void readDescriptor(const ServiceInfo *srvInfo, const DescriptorInfo *descInfo);
 
     bool isBluetoothOn() const;
     bool isScanning() const;
@@ -134,6 +149,12 @@ private:
     void addDeviceToFiltered(DeviceInfo *device);
     void clearAllDevices();
     void clearAllAttributes(bool emitChangedSignals);
+
+    void handleCharacteristicUpdate(const QLowEnergyService *service,
+                                    const QLowEnergyCharacteristic &characteristic,
+                                    const QByteArray &value);
+    void handleDescriptorUpdate(const QLowEnergyService *service,
+                                const QLowEnergyDescriptor &descriptor, const QByteArray &value);
 
 private slots:
     /* QBluetoothLocalDevice */

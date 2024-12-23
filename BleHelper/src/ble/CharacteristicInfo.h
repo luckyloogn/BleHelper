@@ -19,6 +19,11 @@ class CharacteristicInfo : public QObject
     Q_PROPERTY_READONLY_AUTO(bool, canWrite)
     Q_PROPERTY_READONLY_AUTO(bool, canWriteNoResponse)
     Q_PROPERTY_READONLY_AUTO(bool, canRename)
+    Q_PROPERTY_READONLY_AUTO(QString, valueHex)
+    Q_PROPERTY_READONLY_AUTO(QString, valueAscii)
+    Q_PROPERTY_READONLY_AUTO(QString, valueDecimal)
+    Q_PROPERTY_READONLY_AUTO(bool, enableIndications)
+    Q_PROPERTY_READONLY_AUTO(bool, enableNotifications)
 
 public:
     CharacteristicInfo() = default;

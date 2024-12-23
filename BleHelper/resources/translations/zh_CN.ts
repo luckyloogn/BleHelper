@@ -56,46 +56,72 @@
         <translation type="unfinished">连接</translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="64"/>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="67"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="71"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="74"/>
         <source>Disconnect</source>
         <translation type="unfinished">断开连接</translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="211"/>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="285"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="225"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="348"/>
         <source>Read</source>
         <translation type="unfinished">读</translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="225"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="238"/>
         <source>Write</source>
         <translation type="unfinished">写</translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="197"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="211"/>
         <source>Notify</source>
-        <translation type="unfinished">启用通知</translation>
+        <translation type="unfinished">通知</translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="81"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="88"/>
         <source>Services &amp; Characteristics &amp; Descriptors</source>
         <translation type="unfinished">服务 &amp; 特征 &amp; 描述符</translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="183"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="196"/>
         <source>Indicate</source>
-        <translation type="unfinished">启用指示</translation>
+        <translation type="unfinished">指示</translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="236"/>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="295"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="248"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="357"/>
         <source>UUID: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="240"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="252"/>
         <source>Properties: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="256"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="361"/>
+        <source>Value: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="271"/>
+        <source>Hex: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="283"/>
+        <source>ASCII: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="295"/>
+        <source>Decimal: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="307"/>
+        <source>Descriptors: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -681,6 +707,11 @@
         <translation type="unfinished">设备</translation>
     </message>
     <message>
+        <location filename="../../qml/pages/ScannerPage.qml" line="322"/>
+        <source>Filter</source>
+        <translation type="unfinished">过滤器</translation>
+    </message>
+    <message>
         <location filename="../../qml/pages/ScannerPage.qml" line="452"/>
         <source>Connected</source>
         <translation type="unfinished">已连接</translation>
@@ -696,9 +727,8 @@
         <translation type="unfinished">更多选项</translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="322"/>
-        <source>Filter</source>
-        <translation type="unfinished">过滤器</translation>
+        <source>Apply</source>
+        <translation type="obsolete">应用</translation>
     </message>
     <message>
         <location filename="../../qml/pages/ScannerPage.qml" line="334"/>
@@ -1004,6 +1034,98 @@
         <location filename="../../qml/pages/SettingsPage.qml" line="551"/>
         <source>Dependencies &amp; References</source>
         <translation type="unfinished">依赖 &amp; 参考</translation>
+    </message>
+</context>
+<context>
+    <name>WriteAttributePopup</name>
+    <message>
+        <source>Rename Service</source>
+        <translation type="obsolete">重命名服务</translation>
+    </message>
+    <message>
+        <source>Rename Characteristic</source>
+        <translation type="obsolete">重命名特征</translation>
+    </message>
+    <message>
+        <source>Rename</source>
+        <translation type="obsolete">重命名</translation>
+    </message>
+    <message>
+        <source>Enter new name</source>
+        <translation type="obsolete">输入新名称</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="obsolete">取消</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation type="obsolete">保存</translation>
+    </message>
+</context>
+<context>
+    <name>WriteCharacteristicPopup</name>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="119"/>
+        <source>Write New Value</source>
+        <translation type="unfinished">写入新值</translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="157"/>
+        <source>Hex: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="174"/>
+        <source>Hex</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="201"/>
+        <source>ASCII: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="208"/>
+        <source>ASCII</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="225"/>
+        <source>Decimal: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="253"/>
+        <source>Decimal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="287"/>
+        <source>Write with Response (Write Request)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="291"/>
+        <source>Write without Response (Write Command)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="311"/>
+        <source>Cancel</source>
+        <translation type="unfinished">取消</translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="318"/>
+        <source>Send</source>
+        <translation type="unfinished">发送</translation>
+    </message>
+</context>
+<context>
+    <name>WriteCharacteristicPopup copy</name>
+    <message>
+        <source>Cancel</source>
+        <translation type="obsolete">取消</translation>
     </message>
 </context>
 </TS>
