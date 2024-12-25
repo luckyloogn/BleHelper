@@ -58,7 +58,7 @@ FluPage {
                 }
             }
             FluText {
-                color: FluColors.Grey120
+                color: FluTheme.fontSecondaryColor
                 text: {
                     if (ClientManager.connectedDeviceInfo) {
                         return ClientManager.connectedDeviceInfo.address;
@@ -244,15 +244,15 @@ FluPage {
                                     }
                                 }
                                 FluText {
-                                    color: FluColors.Grey120
+                                    color: FluTheme.fontSecondaryColor
                                     text: qsTr("UUID: ") + characteristic_item.uuid
                                 }
                                 FluText {
-                                    color: FluColors.Grey120
+                                    color: FluTheme.fontSecondaryColor
                                     text: qsTr("Properties: ") + characteristic_item.properties
                                 }
                                 FluText {
-                                    color: FluColors.Grey120
+                                    color: FluTheme.fontSecondaryColor
                                     text: qsTr("Value: ")
                                     visible: characteristic_item.valueHex !== ""
                                 }
@@ -267,43 +267,43 @@ FluPage {
 
                                     FluText {
                                         Layout.alignment: Qt.AlignTop
-                                        color: FluColors.Grey120
+                                        color: FluTheme.fontSecondaryColor
                                         text: qsTr("Hex: ")
                                     }
                                     MyFluCopyableText {
                                         Layout.alignment: Qt.AlignTop
                                         Layout.fillWidth: true
-                                        color: FluColors.Grey120
+                                        color: FluTheme.fontSecondaryColor
                                         text: characteristic_item.valueHex
                                         wrapMode: Text.WrapAnywhere
                                     }
                                     FluText {
                                         Layout.alignment: Qt.AlignTop
-                                        color: FluColors.Grey120
+                                        color: FluTheme.fontSecondaryColor
                                         text: qsTr("ASCII: ")
                                     }
                                     MyFluCopyableText {
                                         Layout.alignment: Qt.AlignTop
                                         Layout.fillWidth: true
-                                        color: FluColors.Grey120
+                                        color: FluTheme.fontSecondaryColor
                                         text: characteristic_item.valueAscii
                                         wrapMode: Text.WrapAnywhere
                                     }
                                     FluText {
                                         Layout.alignment: Qt.AlignTop
-                                        color: FluColors.Grey120
+                                        color: FluTheme.fontSecondaryColor
                                         text: qsTr("Decimal: ")
                                     }
                                     MyFluCopyableText {
                                         Layout.alignment: Qt.AlignTop
                                         Layout.fillWidth: true
-                                        color: FluColors.Grey120
+                                        color: FluTheme.fontSecondaryColor
                                         text: characteristic_item.valueDecimal
                                         wrapMode: Text.WrapAnywhere
                                     }
                                 }
                                 FluText {
-                                    color: FluColors.Grey120
+                                    color: FluTheme.fontSecondaryColor
                                     text: qsTr("Descriptors: ")
                                     visible: descriptors_repeater.count > 0
                                 }
@@ -353,11 +353,11 @@ FluPage {
                                             }
                                         }
                                         FluText {
-                                            color: FluColors.Grey120
+                                            color: FluTheme.fontSecondaryColor
                                             text: qsTr("UUID: ") + descriptor_item.uuid
                                         }
                                         FluText {
-                                            color: FluColors.Grey120
+                                            color: FluTheme.fontSecondaryColor
                                             text: qsTr("Value: ") + descriptor_item.value
                                             visible: descriptor_item.value !== ""
                                         }
@@ -398,11 +398,11 @@ FluPage {
                                 }
                             }
                             FluText {
-                                color: FluColors.Grey120
+                                color: FluTheme.fontSecondaryColor
                                 text: service_item.uuid
                             }
                             FluText {
-                                color: FluColors.Grey120
+                                color: FluTheme.fontSecondaryColor
                                 text: service_item.type
                             }
                         }

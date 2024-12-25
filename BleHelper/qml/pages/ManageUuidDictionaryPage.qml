@@ -186,7 +186,7 @@ MyFluPivot {
                             }
                             FluText {
                                 Layout.alignment: Qt.AlignVCenter
-                                color: FluColors.Grey120
+                                color: FluTheme.fontSecondaryColor
                                 text: modelData.uuid
                             }
                         }

@@ -153,6 +153,7 @@ FluPage {
     }
     FilterPopup {
         id: filter_popup
+
     }
     FluFrame {
         id: bluetooth_control_container
@@ -415,7 +416,7 @@ FluPage {
 
                             FluText {
                                 Layout.alignment: Qt.AlignVCenter
-                                color: FluColors.Grey120
+                                color: FluTheme.fontSecondaryColor
                                 text: modelData.address
                             }
                             FluDivider {
@@ -425,7 +426,7 @@ FluPage {
                             }
                             FluText {
                                 Layout.alignment: Qt.AlignVCenter
-                                color: FluColors.Grey120
+                                color: FluTheme.fontSecondaryColor
                                 text: modelData.rssi + qsTr(" dBm")
                             }
                             FluDivider {
@@ -436,7 +437,7 @@ FluPage {
                             }
                             FluText {
                                 Layout.alignment: Qt.AlignVCenter
-                                color: FluColors.Grey120
+                                color: FluTheme.fontSecondaryColor
                                 text: qsTr("Favorited")
                                 visible: modelData.isFavorite
                             }
@@ -448,7 +449,7 @@ FluPage {
                             }
                             FluText {
                                 Layout.alignment: Qt.AlignVCenter
-                                color: FluColors.Grey120
+                                color: FluTheme.fontSecondaryColor
                                 text: qsTr("Connected")
                                 visible: modelData.isConnected
                             }
@@ -460,7 +461,7 @@ FluPage {
                             }
                             FluText {
                                 Layout.alignment: Qt.AlignVCenter
-                                color: FluColors.Grey120
+                                color: FluTheme.fontSecondaryColor
                                 text: qsTr("Paired")
                                 visible: modelData.isPaired
                             }
