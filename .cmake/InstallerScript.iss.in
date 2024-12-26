@@ -3,8 +3,8 @@
 
 #define MyAppName "${PROJECT_NAME}"
 #define MyAppVersion "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
-#define MyAppPublisher "lucky9loogn"
-#define MyAppURL "https://github.com/lucky9loogn"
+#define MyAppPublisher "${AUTHOR}"
+#define MyAppURL "${REPOSITORY_URL}"
 #define MyAppExeName "${PROJECT_NAME}.exe"
 #define MyAppFileDir "dist"
 
@@ -29,18 +29,18 @@ Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 UninstallDisplayIcon={app}\{#MyAppExeName}
-SetupIconFile=.\..\BleHelper\resources\images\icons\logo.ico
-MinVersion = 6.0
+SetupIconFile=${CMAKE_CURRENT_SOURCE_DIR}\resources\images\icons\logo.ico
 
 [Languages]
 Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkablealone
 
 [Files]
 Source: ".\..\{#MyAppFileDir}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\..\{#MyAppFileDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: ".\..\{#MyAppFileDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "vc_redist.x64.exe"
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
