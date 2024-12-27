@@ -596,7 +596,7 @@ FluScrollablePage {
                                 if (xhr.status === 200) {
                                     // 200 OK: 请求成功，服务器返回了请求的数据
                                     var data = JSON.parse(xhr.responseText);
-                                    var latestReleaseVersionName = data.tag_name;
+                                    var latestReleaseVersionName = data.tag_name.replace(/^v/, "");
                                     var latestReleaseInfo = data.body;
                                     if (latestReleaseVersionName !== ApplicationInfo.versionName) {
                                         update_dialog.show(latestReleaseVersionName, latestReleaseInfo);
