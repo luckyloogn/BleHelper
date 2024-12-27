@@ -1,0 +1,120 @@
+# reference: https://github.com/zhuzichu520/FluentUI/blob/main/.github/workflows/windows.yml
+
+name: Build (and release) for Windows
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and release
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        os: [windows-latest]
+        include:
+          - qt_ver: 6.8.1        
+            qt_arch: win64_msvc2022_64
+            msvc_arch: x64
+            qt_arch_install: msvc2022_64  
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      targetName: BleHelper.exe
+      fileName: BleHelper
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          
+      - name: Setup ninja
+        uses: seanmiddleditch/gha-setup-ninja@v5
+        with:
+          version: 1.10.2
+          
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ matrix.qt_ver }}
+          arch: ${{ matrix.qt_arch }}
+          cache: 'true'
+          cache-key-prefix: 'install-qt-action'
+          modules: 'qtshadertools qt5compat qtconnectivity'
+          
+      - name: Build and package the project
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.msvc_arch }}
+          mkdir build
+          cd build
+          cmake -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -GNinja ..
+          cmake --build . --target all --config Release --parallel
+          cmake --build . --target Script-DeployRelease
+
+      - name: Patch
+        # fix QTBUG-132202: https://bugreports.qt.io/browse/QTBUG-132202
+        shell: pwsh
+        run: |
+          $owner = "luckyloogn"
+          $repo = "build-qtconnectivity"
+          $tag = "fix-v6.8.1"
+          $assetName = "Qt6Bluetooth.dll"
+          $downloadPath = "dist/$assetName"
+
+          $assetUrl = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases/tags/$tag" | 
+            Where-Object { $_.assets.name -eq $assetName } |
+            Select-Object -ExpandProperty assets |
+            Select-Object -ExpandProperty browser_download_url
+
+          if (-not $assetUrl) {
+            Write-Error "Asset $assetName not found!"
+            exit 1
+          }
+
+          if (Test-Path $downloadPath) {
+              Write-Host "$assetName already exists in $downloadDir. Deleting the old file..."
+              Remove-Item $downloadPath -Force
+          }
+
+          Write-Host "Downloading $assetName..."
+          Invoke-WebRequest -Uri $assetUrl -OutFile $downloadPath
+
+          if (Test-Path $downloadPath) {
+            Write-Host "$assetName downloaded successfully to $downloadPath!"
+          } else {
+            Write-Error "Download $assetName to $downloadPath failed!"
+            exit 1
+          }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.fileName }}_${{ matrix.qt_arch }}_Qt${{ matrix.qt_ver }}
+          path: dist
+
+      - name: Create installer 
+        if: startsWith(github.event.ref, 'refs/tags/')
+        uses: zhuzichu520/inno-setup-action@v1.0.1
+        with:
+          filepath: package/InstallerScript.iss
+
+      - name: Upload release
+        if: startsWith(github.event.ref, 'refs/tags/')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: package/installer.exe
+          asset_name: ${{ env.fileName }}_${{ github.ref_name }}_${{ matrix.qt_arch }}_Qt${{ matrix.qt_ver }}.exe
+          tag: ${{ github.ref }}
+          overwrite: true 
