@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.20)
 
 project(
   BleHelper
-  VERSION ${MAJOR_VERSION}.${MINOR_VERSION}
   DESCRIPTION "BLE Helper"
   LANGUAGES CXX)
 
@@ -19,14 +18,14 @@ find_package(Qt6 REQUIRED COMPONENTS Bluetooth Core Gui Quick)
 # 获取当前构建时间
 string(TIMESTAMP BUILD_DATE_TIME "%Y-%m-%d %H:%M:%S")
 # 软件作者
-set(AUTHOR "lucky9loogn")
+set(AUTHOR "luckyloogn")
 # 源代码仓库地址
-set(REPOSITORY_URL "https://github.com/lucky9loogn/BleHelper")
+set(REPOSITORY_URL "https://github.com/luckyloogn/BleHelper")
 # 用于检查更新的网络地址
 set(UPDATE_CHECK_URL
-    "https://api.github.com/repos/lucky9loogn/BleHelper/releases/latest")
+    "https://api.github.com/repos/luckyloogn/BleHelper/releases/latest")
 # 软件最新版本的下载地址
-set(UPDATE_URL "https://github.com/lucky9loogn/BleHelper/releases/latest")
+set(UPDATE_URL "https://github.com/luckyloogn/BleHelper/releases/latest")
 
 # 生成版本信息头文件
 set(HEADER_FILE_VERSION_PATH
@@ -177,10 +176,6 @@ if(CMAKE_BUILD_TYPE MATCHES "Release")
               ${CMAKE_CURRENT_BINARY_DIR}/i18n ${CMAKE_SOURCE_DIR}/dist/i18n
       COMMAND
         ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.exe
-        ${CMAKE_SOURCE_DIR}/dist
-      COMMAND
-        ${CMAKE_COMMAND} -E copy
-        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.exe.manifest
         ${CMAKE_SOURCE_DIR}/dist
       COMMAND
         ${QT_DEPLOY_QT} --qmldir=${CMAKE_CURRENT_LIST_DIR} --plugindir
