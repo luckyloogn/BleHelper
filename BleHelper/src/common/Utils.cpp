@@ -93,6 +93,11 @@ QString Utils::byteArrayToAscii(const QByteArray &value)
     return result;
 }
 
+QString Utils::byteArrayToUtf8(const QByteArray &value)
+{
+    return QString::fromUtf8(value);
+}
+
 QString Utils::byteArrayToDecimal(const QByteArray &value, char separator)
 {
     QString result;

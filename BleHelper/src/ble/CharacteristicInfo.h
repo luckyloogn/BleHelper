@@ -21,6 +21,7 @@ class CharacteristicInfo : public QObject
     Q_PROPERTY_READONLY_AUTO(bool, canRename)
     Q_PROPERTY_READONLY_AUTO(QString, valueHex)
     Q_PROPERTY_READONLY_AUTO(QString, valueAscii)
+    Q_PROPERTY_READONLY_AUTO(QString, valueUtf8)
     Q_PROPERTY_READONLY_AUTO(QString, valueDecimal)
     Q_PROPERTY_READONLY_AUTO(bool, enableIndications)
     Q_PROPERTY_READONLY_AUTO(bool, enableNotifications)

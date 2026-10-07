@@ -63,60 +63,65 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="196"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="197"/>
         <source>Indicate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="211"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="212"/>
         <source>Notify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="225"/>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="348"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="226"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="361"/>
         <source>Read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="238"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="239"/>
         <source>Write</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="248"/>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="357"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="249"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="370"/>
         <source>UUID: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="252"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="253"/>
         <source>Properties: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="256"/>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="361"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="257"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="374"/>
         <source>Value: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="271"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="272"/>
         <source>Hex: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="283"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="284"/>
         <source>ASCII: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="295"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="308"/>
+        <source>UTF-8: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="296"/>
         <source>Decimal: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ConnectionPage.qml" line="307"/>
+        <location filename="../../qml/pages/ConnectionPage.qml" line="320"/>
         <source>Descriptors: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -650,67 +655,67 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="184"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="185"/>
         <source>Bluetooth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="196"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="197"/>
         <source>On</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="196"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="197"/>
         <source>Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="243"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="244"/>
         <source>Find devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="271"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="272"/>
         <source>Stop Scanning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="273"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="274"/>
         <source>Start Scanning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="494"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="495"/>
         <source>More Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="322"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="323"/>
         <source>Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="452"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="453"/>
         <source>Connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="464"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="465"/>
         <source>Paired</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="309"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="310"/>
         <source>Devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="334"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="335"/>
         <source>Sort by RSSI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="339"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="340"/>
         <source>Sort by RSSI in descending order.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -745,23 +750,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="429"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="430"/>
         <source> dBm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="440"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="441"/>
         <source>Favorited</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="479"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="480"/>
         <source>Connect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/pages/ScannerPage.qml" line="479"/>
-        <location filename="../../qml/pages/ScannerPage.qml" line="484"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="480"/>
+        <location filename="../../qml/pages/ScannerPage.qml" line="485"/>
         <source>Disconnect</source>
         <translation type="unfinished"></translation>
     </message>
@@ -999,57 +1004,67 @@
 <context>
     <name>WriteCharacteristicPopup</name>
     <message>
-        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="119"/>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="183"/>
         <source>Write New Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="157"/>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="221"/>
         <source>Hex: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="174"/>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="238"/>
         <source>Hex</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="201"/>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="267"/>
         <source>ASCII: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="208"/>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="274"/>
         <source>ASCII</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="225"/>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="345"/>
+        <source>UTF-8: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="352"/>
+        <source>UTF-8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="293"/>
         <source>Decimal: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="253"/>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="321"/>
         <source>Decimal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="287"/>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="383"/>
         <source>Write with Response (Write Request)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="291"/>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="387"/>
         <source>Write without Response (Write Command)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="311"/>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="407"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="318"/>
+        <location filename="../../qml/components/WriteCharacteristicPopup.qml" line="414"/>
         <source>Send</source>
         <translation type="unfinished"></translation>
     </message>

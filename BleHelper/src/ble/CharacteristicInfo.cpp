@@ -66,6 +66,7 @@ CharacteristicInfo::CharacteristicInfo(const QLowEnergyCharacteristic &c)
     /* value */
     valueHex("");
     valueAscii("");
+    valueUtf8("");
     valueDecimal("");
 
     /* indications & notifications settings */

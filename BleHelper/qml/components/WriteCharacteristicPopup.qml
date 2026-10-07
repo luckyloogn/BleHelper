@@ -47,6 +47,70 @@ MyFluPopup {
         }
         return result.trim();
     }
+    function utf8ToHex(utf8) {
+        let result = "";
+        for (let i = 0; i < utf8.length; i++) {
+            let code = utf8.charCodeAt(i);
+            // 组合代理对, 得到完整的码点(支持 emoji 等增补平面字符)
+            if (code >= 0xD800 && code <= 0xDBFF && i + 1 < utf8.length) {
+                let next = utf8.charCodeAt(i + 1);
+                if (next >= 0xDC00 && next <= 0xDFFF) {
+                    code = 0x10000 + ((code - 0xD800) << 10) + (next - 0xDC00);
+                    i++;
+                }
+            }
+            if (code < 0x80) {
+                result += code.toString(16).padStart(2, "0") + " ";
+            } else if (code < 0x800) {
+                result += (0xC0 | (code >> 6)).toString(16).padStart(2, "0") + " ";
+                result += (0x80 | (code & 0x3F)).toString(16).padStart(2, "0") + " ";
+            } else if (code < 0x10000) {
+                result += (0xE0 | (code >> 12)).toString(16).padStart(2, "0") + " ";
+                result += (0x80 | ((code >> 6) & 0x3F)).toString(16).padStart(2, "0") + " ";
+                result += (0x80 | (code & 0x3F)).toString(16).padStart(2, "0") + " ";
+            } else {
+                result += (0xF0 | (code >> 18)).toString(16).padStart(2, "0") + " ";
+                result += (0x80 | ((code >> 12) & 0x3F)).toString(16).padStart(2, "0") + " ";
+                result += (0x80 | ((code >> 6) & 0x3F)).toString(16).padStart(2, "0") + " ";
+                result += (0x80 | (code & 0x3F)).toString(16).padStart(2, "0") + " ";
+            }
+        }
+        return result.trim().toUpperCase();
+    }
+    function hexToUtf8(hex) {
+        let bytes = [];
+        let arr = hex.trim().split(/\s+/);
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i] === "") {
+                continue;
+            }
+            bytes.push(parseInt(arr[i], 16));
+        }
+        let result = "";
+        let i = 0;
+        while (i < bytes.length) {
+            let b = bytes[i];
+            if (b < 0x80) {
+                result += String.fromCharCode(b);
+                i += 1;
+            } else if (b >= 0xC0 && b < 0xE0 && i + 1 < bytes.length) {
+                result += String.fromCharCode(((b & 0x1F) << 6) | (bytes[i + 1] & 0x3F));
+                i += 2;
+            } else if (b >= 0xE0 && b < 0xF0 && i + 2 < bytes.length) {
+                result += String.fromCharCode(((b & 0x0F) << 12) | ((bytes[i + 1] & 0x3F) << 6) | (bytes[i + 2] & 0x3F));
+                i += 3;
+            } else if (b >= 0xF0 && i + 3 < bytes.length) {
+                let code = ((b & 0x07) << 18) | ((bytes[i + 1] & 0x3F) << 12) | ((bytes[i + 2] & 0x3F) << 6) | (bytes[i + 3] & 0x3F);
+                code -= 0x10000;
+                result += String.fromCharCode(0xD800 + (code >> 10), 0xDC00 + (code & 0x3FF));
+                i += 4;
+            } else {
+                // 非法字节, 直接跳过
+                i += 1;
+            }
+        }
+        return result;
+    }
 
     /**
      * 显示
@@ -150,7 +214,7 @@ MyFluPopup {
             columnSpacing: 0
             columns: 2
             rowSpacing: 8
-            rows: 3
+            rows: 5
 
             FluText {
                 Layout.alignment: Qt.AlignVCenter
@@ -182,6 +246,7 @@ MyFluPopup {
                     if (text === "") {
                         ascii_input.text = "";
                         decimal_input.text = "";
+                        utf8_input.text = "";
                     }
                 }
                 onTextEdited: {
@@ -192,6 +257,7 @@ MyFluPopup {
                             cursorPosition = text.length;
                             ascii_input.text = popup.hexToAscii(text);
                             decimal_input.text = popup.hexToDecimal(text);
+                            utf8_input.text = popup.hexToUtf8(text);
                         }
                     }
                 }
@@ -211,12 +277,14 @@ MyFluPopup {
                     if (text === "") {
                         hex_input.text = "";
                         decimal_input.text = "";
+                        utf8_input.text = "";
                     }
                 }
                 onTextEdited: {
                     if (text !== "") {
                         hex_input.text = popup.asciiToHex(text);
                         decimal_input.text = popup.hexToDecimal(popup.asciiToHex(text));
+                        utf8_input.text = popup.hexToUtf8(popup.asciiToHex(text));
                     }
                 }
             }
@@ -256,6 +324,7 @@ MyFluPopup {
                     if (text === "") {
                         hex_input.text = "";
                         ascii_input.text = "";
+                        utf8_input.text = "";
                     }
                 }
                 onTextEdited: {
@@ -266,7 +335,34 @@ MyFluPopup {
                             cursorPosition = text.length;
                             hex_input.text = popup.decimalToHex(text);
                             ascii_input.text = popup.hexToAscii(popup.decimalToHex(text));
+                            utf8_input.text = popup.hexToUtf8(popup.decimalToHex(text));
                         }
+                    }
+                }
+            }
+            FluText {
+                Layout.alignment: Qt.AlignVCenter
+                text: qsTr("UTF-8: ")
+            }
+            MyFluTextBox {
+                id: utf8_input
+
+                Layout.alignment: Qt.AlignVCenter
+                Layout.fillWidth: true
+                placeholderText: qsTr("UTF-8")
+
+                onTextChanged: {
+                    if (text === "") {
+                        hex_input.text = "";
+                        ascii_input.text = "";
+                        decimal_input.text = "";
+                    }
+                }
+                onTextEdited: {
+                    if (text !== "") {
+                        hex_input.text = popup.utf8ToHex(text);
+                        ascii_input.text = popup.hexToAscii(popup.utf8ToHex(text));
+                        decimal_input.text = popup.hexToDecimal(popup.utf8ToHex(text));
                     }
                 }
             }

@@ -162,6 +162,7 @@ FluPage {
                                 property string valueAscii: info ? info.valueAscii : ""
                                 property string valueDecimal: info ? info.valueDecimal : ""
                                 property string valueHex: info ? info.valueHex : ""
+                                property string valueUtf8: info ? info.valueUtf8 : ""
 
                                 Layout.fillWidth: true
                                 spacing: 0
@@ -262,7 +263,7 @@ FluPage {
                                     columnSpacing: 0
                                     columns: 2
                                     rowSpacing: 0
-                                    rows: 3
+                                    rows: 4
                                     visible: characteristic_item.valueHex !== ""
 
                                     FluText {
@@ -299,6 +300,18 @@ FluPage {
                                         Layout.fillWidth: true
                                         color: FluTheme.fontSecondaryColor
                                         text: characteristic_item.valueDecimal
+                                        wrapMode: Text.WrapAnywhere
+                                    }
+                                    FluText {
+                                        Layout.alignment: Qt.AlignTop
+                                        color: FluTheme.fontSecondaryColor
+                                        text: qsTr("UTF-8: ")
+                                    }
+                                    MyFluCopyableText {
+                                        Layout.alignment: Qt.AlignTop
+                                        Layout.fillWidth: true
+                                        color: FluTheme.fontSecondaryColor
+                                        text: characteristic_item.valueUtf8
                                         wrapMode: Text.WrapAnywhere
                                     }
                                 }

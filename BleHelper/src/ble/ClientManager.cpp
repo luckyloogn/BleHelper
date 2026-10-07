@@ -777,11 +777,13 @@ void ClientManager::handleCharacteristicUpdate(const QLowEnergyService *service,
 
     QString valueHex = Utils::byteArrayToHex(value);
     QString valueAscii = Utils::byteArrayToAscii(value);
+    QString valueUtf8 = Utils::byteArrayToUtf8(value);
     QString valueDecimal = Utils::byteArrayToDecimal(value);
 
     CharacteristicInfo *charInfo = _allCharacteristics[srvUuid][charUuid];
     charInfo->valueHex(valueHex);
     charInfo->valueAscii(valueAscii);
+    charInfo->valueUtf8(valueUtf8);
     charInfo->valueDecimal(valueDecimal);
 }
 

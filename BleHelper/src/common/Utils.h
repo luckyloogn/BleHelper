@@ -15,6 +15,7 @@ public:
     static QString getAttributeName(const QLowEnergyDescriptor &d, bool *canRename = nullptr);
     static QString byteArrayToHex(const QByteArray &value, char separator = ' ', bool upper = true);
     static QString byteArrayToAscii(const QByteArray &value);
+    static QString byteArrayToUtf8(const QByteArray &value);
     static QString byteArrayToDecimal(const QByteArray &value, char separator = ' ');
     static QString parseDescriptorValue(const QByteArray &value,
                                         QBluetoothUuid::DescriptorType type);
