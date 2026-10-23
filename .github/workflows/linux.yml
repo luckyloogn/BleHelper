@@ -120,8 +120,9 @@ jobs:
             libxcb-shape0-dev libxcb-xfixes0-dev libxcb-xinerama0-dev libxcb-sync-dev \
             libxcb-render-util0-dev libxcb-shm0-dev > /tmp/apt-install.log 2>&1 || true
           { echo "space:"; df -h / | tail -n 1
-            echo "errors:"; grep -E '^[EW]:' /tmp/apt-install.log | head -n 6
+            echo "errors:"; grep -E '^[EW]:' /tmp/apt-install.log | head -n 6 || true
             echo "-- tail --"; tail -n 6 /tmp/apt-install.log; } > /tmp/apt-tail.txt
+          true
           DIAG=$(tr -c 'a-zA-Z0-9._-' '-' < /tmp/apt-tail.txt | cut -c1-220)
           echo "DIAG=$DIAG" >> "$GITHUB_ENV"
           cat /tmp/apt-tail.txt
@@ -318,12 +319,15 @@ jobs:
         if: failure()
         run: |
           {
+            echo "cwd:"; ls -la . | head -n 12
+            echo "targz:"; ls -l ./*.tar.gz 2>&1 || true
+            echo "tarcontent:"; tar -tzf snap-tree.tar.gz 2>&1 | head -n 3 || true
             echo "mksquashfs-path:"; command -v mksquashfs || echo MISSING
-            echo "apt:"; sudo apt-get install -y squashfs-tools 2>&1 | tail -n 5
-            echo "pack:"; sudo mksquashfs snap-tree /tmp/t.snap -noappend -comp xz -all-root -no-xattrs -no-progress 2>&1 | tail -n 8
-            echo "exit:$?"
-            echo "snapyaml:"; head -n 6 snap-tree/meta/snap.yaml
+            echo "apt:"; sudo apt-get install -y squashfs-tools 2>&1 | tail -n 4
+            echo "pack:"; sudo mksquashfs snap-tree /tmp/t.snap -noappend -comp xz -all-root -no-xattrs -no-progress 2>&1 | tail -n 6
+            echo "snapyaml:"; cat snap-tree/meta/snap.yaml 2>&1 | head -n 4 || true
           } > /tmp/snap-tail.txt 2>&1
+          true
           DIAG=$(tr -c 'a-zA-Z0-9._-' '-' < /tmp/snap-tail.txt | cut -c1-220)
           echo "DIAG=$DIAG" >> "$GITHUB_ENV"
           cat /tmp/snap-tail.txt
