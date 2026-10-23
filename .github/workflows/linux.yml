@@ -253,11 +253,22 @@ jobs:
       - name: Pack the snap
         run: |
           tar -xzf snap-tree.tar.gz
-          # snap pack squashes the tree with mksquashfs and insists on root-owned files
+          # snap packs the tree with mksquashfs and insists on root-owned files
           sudo apt-get update -qq
           sudo apt-get install -y squashfs-tools
           sudo chown -R root:root snap-tree
-          sudo snap pack snap-tree ./snap-out
+          command -v snap >/dev/null || sudo apt-get install -y snapd
+          echo "=== snap.yaml ==="
+          cat snap-tree/meta/snap.yaml
+          mkdir -p ./snap-out
+          # A snap is nothing but a squashfs of the tree plus meta/snap.yaml, so mksquashfs is
+          # used directly whenever the snapd command line is not usable on the runner.
+          if ! sudo snap pack snap-tree ./snap-out; then
+            echo "snap pack failed, packing with mksquashfs instead"
+            VERSION=$(sed -n "s/^version: *//p" snap-tree/meta/snap.yaml | tr -d "'\"")
+            sudo mksquashfs snap-tree "./snap-out/blehelper_${VERSION}_${{ matrix.arch }}.snap" \
+              -noappend -comp xz -all-root -no-xattrs -no-progress
+          fi
           ls -l ./snap-out
 
       - name: Upload artifact
