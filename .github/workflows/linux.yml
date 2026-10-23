@@ -38,6 +38,8 @@ jobs:
 
     env:
       targetName: BleHelper
+      # the version part of the AppImage name: the tag for a tag build, the branch otherwise
+      appVersion: ${{ github.ref_name }}
       # containers usually have no FUSE, so let linuxdeploy / appimagetool extract-and-run
       APPIMAGE_EXTRACT_AND_RUN: 1
       DEBIAN_FRONTEND: noninteractive
@@ -105,12 +107,13 @@ jobs:
           # make sure Qt plugin finds QML sources so it can deploy the imported files
           export QML_SOURCES_PATHS=./
           linuxdeploy-x86_64.AppImage --plugin=qt --output=appimage --create-desktop-file --icon-file=./dist/${{ env.targetName }}.svg --executable=./dist/${{ env.targetName }} --appdir ./dist/
-          mv ${{ env.targetName }}-*.AppImage ./package/${{ env.targetName }}.AppImage
+          # AppImage naming convention: <Name>-<Version>-<Arch>.AppImage, must not contain "linux"
+          mv ${{ env.targetName }}-*.AppImage ./package/${{ env.targetName }}-${{ env.appVersion }}-x86_64.AppImage
 
       - name: Check bundled glibc requirement
         run: |
-          chmod +x ./package/${{ env.targetName }}.AppImage
-          ./package/${{ env.targetName }}.AppImage --appimage-extract > /dev/null
+          chmod +x ./package/${{ env.targetName }}-${{ env.appVersion }}-x86_64.AppImage
+          ./package/${{ env.targetName }}-${{ env.appVersion }}-x86_64.AppImage --appimage-extract > /dev/null
           echo "=== GLIBC versions referenced by the bundle (must not exceed 2.35) ==="
           find squashfs-root/usr/bin squashfs-root/usr/lib -type f \
             \( -name '*.so*' -o -path '*/usr/bin/*' \) \
@@ -121,16 +124,16 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.targetName }}-x86_64
-          path: ./package/${{ env.targetName }}.AppImage
+          name: ${{ env.targetName }}-${{ env.appVersion }}-x86_64
+          path: ./package/${{ env.targetName }}-${{ env.appVersion }}-x86_64.AppImage
 
       - name: Upload release
         if: startsWith(github.event.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./package/${{ env.targetName }}.AppImage
-          # AppImage naming convention: <Name>-<Version>-<Arch>.AppImage, must not contain "linux"
-          asset_name: ${{ env.targetName }}-${{ github.ref_name }}-x86_64.AppImage
+          # the file is already named after the convention, so no asset_name is needed:
+          # <Name>-<Version>-<Arch>.AppImage, must not contain "linux"
+          file: ./package/${{ env.targetName }}-${{ env.appVersion }}-x86_64.AppImage
           tag: ${{ github.ref }}
           overwrite: true
