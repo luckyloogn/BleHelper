@@ -47,7 +47,7 @@ jobs:
         run: |
           apt-get update
           apt-get install -y --no-install-recommends \
-            ca-certificates curl git sudo zip unzip xz-utils \
+            ca-certificates curl wget git sudo zip unzip xz-utils \
             build-essential cmake ninja-build \
             file patchelf zstd libfuse2 openssl \
             python3 python3-pip python-is-python3 \
