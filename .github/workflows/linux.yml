@@ -110,9 +110,17 @@ jobs:
       - name: Collect apt diagnostics
         if: failure()
         run: |
-          apt-get update > /tmp/apt-update.log 2>&1
-          tail -n 15 /tmp/apt-update.log > /tmp/apt-tail.txt
-          DIAG=$(tr -c 'a-zA-Z0-9._-' '-' < /tmp/apt-tail.txt | cut -c1-150)
+          apt-get install -y --no-install-recommends \
+            ca-certificates curl wget git sudo zip unzip xz-utils \
+            build-essential cmake ninja-build dpkg \
+            file patchelf zstd libfuse2 openssl \
+            python3 python3-pip python-is-python3 \
+            libxcb-cursor0 libgl1-mesa-dev libxcb1-dev libgtk-3-dev libxkbcommon-x11-dev \
+            libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev \
+            libxcb-shape0-dev libxcb-xfixes0-dev libxcb-xinerama0-dev libxcb-sync-dev \
+            libxcb-render-util0-dev libxcb-shm0-dev > /tmp/apt-install.log 2>&1
+          { grep -E '^[EW]:' /tmp/apt-install.log | head -n 8; echo '-- tail --'; tail -n 6 /tmp/apt-install.log; } > /tmp/apt-tail.txt
+          DIAG=$(tr -c 'a-zA-Z0-9._-' '-' < /tmp/apt-tail.txt | cut -c1-220)
           echo "DIAG=$DIAG" >> "$GITHUB_ENV"
           cat /tmp/apt-tail.txt
 
