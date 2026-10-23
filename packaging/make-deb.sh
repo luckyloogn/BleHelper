@@ -110,7 +110,8 @@ Files: $PREFIX/usr/lib/libQt6*.so*
 Copyright: The Qt Company Ltd. and contributors
 License: LGPL-3.0-only
  Qt is bundled unmodified as separate shared libraries, so it can be replaced by the user.
- The source is available from https://download.qt.io/official_releases/qt/6.8/6.8.1/
+ The source is available from
+ https://download.qt.io/archive/qt/6.8/6.8.1/single/qt-everywhere-src-6.8.1.tar.xz
 EOF
 
 INSTALLED_SIZE=$(du -sk "$ROOT" | cut -f1)

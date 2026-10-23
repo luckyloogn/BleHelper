@@ -7,7 +7,8 @@ The released packages also contain the third-party components listed below.
 
 - Copyright: The Qt Company Ltd. and contributors
 - License: **LGPL-3.0-only** (alternatively GPL-2.0-or-later, GPL-3.0-only, or a commercial license)
-- Project: https://www.qt.io/ , sources: https://download.qt.io/official_releases/qt/6.8/6.8.1/
+- Project: https://www.qt.io/
+- Sources: https://download.qt.io/archive/qt/6.8/6.8.1/single/qt-everywhere-src-6.8.1.tar.xz
 
 The modules used are Qt Core, Gui, Quick, Bluetooth, Shader Tools, the Qt 5 Compatibility
 Module, and their dependencies. They are shipped unmodified as **separate shared libraries**
