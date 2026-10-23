@@ -319,25 +319,31 @@ jobs:
         if: failure()
         run: |
           {
-            echo "cwd:"; ls -la . | head -n 12
-            echo "targz:"; ls -l ./*.tar.gz 2>&1 || true
-            echo "tarcontent:"; tar -tzf snap-tree.tar.gz 2>&1 | head -n 3 || true
-            echo "mksquashfs-path:"; command -v mksquashfs || echo MISSING
-            echo "apt:"; sudo apt-get install -y squashfs-tools 2>&1 | tail -n 4
-            echo "pack:"; sudo mksquashfs snap-tree /tmp/t.snap -noappend -comp xz -all-root -no-xattrs -no-progress 2>&1 | tail -n 6
-            echo "snapyaml:"; cat snap-tree/meta/snap.yaml 2>&1 | head -n 4 || true
+            echo "mksqpath:"; command -v mksquashfs || echo MISSING
+            echo "yaml:"; cat snap-tree/meta/snap.yaml 2>&1 | head -n 3 || true
+            sudo mksquashfs snap-tree /tmp/t.snap -noappend -comp xz -all-root -no-xattrs -no-progress > /tmp/pack.log 2>&1 || true
+            echo "exit:$?"; tail -n 10 /tmp/pack.log || true
           } > /tmp/snap-tail.txt 2>&1
           true
-          DIAG=$(tr -c 'a-zA-Z0-9._-' '-' < /tmp/snap-tail.txt | cut -c1-220)
-          echo "DIAG=$DIAG" >> "$GITHUB_ENV"
+          DIAG=$(tr -c 'a-zA-Z0-9._-' '-' < /tmp/snap-tail.txt)
+          echo "DIAG_A=$(printf '%s' "$DIAG" | cut -c1-200)" >> "$GITHUB_ENV"
+          echo "DIAG_B=$(printf '%s' "$DIAG" | cut -c201-400)" >> "$GITHUB_ENV"
           cat /tmp/snap-tail.txt
 
       - name: Upload snap diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: snapdiag-${{ matrix.arch }}-${{ env.DIAG }}
+          name: snapdiagA-${{ matrix.arch }}-${{ env.DIAG_A }}
           path: /tmp/snap-tail.txt
+          if-no-files-found: warn
+
+      - name: Upload snap diagnostics (continued)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapdiagB-${{ matrix.arch }}-${{ env.DIAG_B }}
+          path: /tmp/pack.log
           if-no-files-found: warn
 
       - name: Upload artifact
