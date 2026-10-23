@@ -8,6 +8,9 @@
 #   <deb-arch>    amd64 or arm64
 #   <output-dir>  where the .deb is written
 #
+# Environment:
+#   MIN_LIBC      minimum libc6 version the bundled libraries need (default 2.34)
+#
 # The payload goes to /opt/blehelper and a small launcher is put into /usr/bin, so that the
 # bundled libraries cannot clash with the ones of the system. Qt stays as separate shared
 # libraries, which is what LGPLv3 expects: they can be replaced by the user.
@@ -119,7 +122,7 @@ Priority: optional
 Architecture: $ARCH
 Maintainer: luckyloogn <luckyloogn@users.noreply.github.com>
 Installed-Size: $INSTALLED_SIZE
-Depends: libc6 (>= 2.34), libstdc++6, libgcc-s1, libglib2.0-0, libdbus-1-3, libfontconfig1, libfreetype6, libgl1, libegl1, libx11-6, libx11-xcb1, libxkbcommon-x11-0, libxcb1, libxcb-cursor0, libxcb-icccm4, libxcb-image0, libxcb-keysyms1, libxcb-randr0, libxcb-render-util0, libxcb-shape0, libxcb-shm0, libxcb-sync1, libxcb-xfixes0, libxcb-xinerama0, libxcb-xkb1
+Depends: libc6 (>= ${MIN_LIBC:-2.34}), libstdc++6, libgcc-s1, libglib2.0-0, libdbus-1-3, libfontconfig1, libfreetype6, libgl1, libegl1, libx11-6, libx11-xcb1, libxkbcommon-x11-0, libxcb1, libxcb-cursor0, libxcb-icccm4, libxcb-image0, libxcb-keysyms1, libxcb-randr0, libxcb-render-util0, libxcb-shape0, libxcb-shm0, libxcb-sync1, libxcb-xfixes0, libxcb-xinerama0, libxcb-xkb1
 Homepage: https://github.com/luckyloogn/BleHelper
 Description: Bluetooth Low Energy debugging assistant
  A desktop tool to scan for, connect to and debug BLE peripherals.

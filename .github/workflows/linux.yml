@@ -22,14 +22,19 @@ jobs:
       contents: write
     runs-on: ${{ matrix.runner }}
 
+    # The runner falls back to /bin/sh inside a container, and dash knows no "pipefail".
+    defaults:
+      run:
+        shell: bash
+
     # Packages must be built on the oldest still-supported Ubuntu LTS.
     # linuxdeploy bundles system libraries (libsystemd / libkrb5 / libgcrypt / libxkbcommon /
     # libglib / libdbus ...) from the build machine, so building on Ubuntu 24.04 produces a
     # bundle that requires GLIBC_2.38 and crashes on older distributions.
-    # Using a ubuntu:22.04 (glibc 2.35) container also avoids depending on the ubuntu-22.04
-    # runner label, which is already in the deprecation process.
+    # Building inside a container rather than on an ubuntu-22.04 runner also keeps us
+    # independent of that runner label, which is already in the deprecation process.
     container:
-      image: ubuntu:22.04
+      image: ${{ matrix.container }}
 
     strategy:
       fail-fast: false
@@ -37,12 +42,22 @@ jobs:
         include:
           - arch: amd64
             runner: ubuntu-latest
+            container: ubuntu:22.04
+            glibc_max: '2.35'
+            # the bundle itself needs 2.34; the AppImage runtime is not shipped in the .deb
+            libc_min: '2.34'
             qt_ver: '6.8.1'
             qt_arch: linux_gcc_64
             deploy_arch: x86_64
             deb_arch: amd64
+          # Qt ships its arm64 Linux binaries only built on Ubuntu 24.04, they need GLIBC_2.38
+          # and GLIBCXX_3.4.32, so even qmlimportscanner cannot run inside a 22.04 container.
+          # arm64 therefore targets Ubuntu 24.04+ only.
           - arch: arm64
             runner: ubuntu-24.04-arm
+            container: ubuntu:24.04
+            glibc_max: '2.38'
+            libc_min: '2.38'
             qt_ver: '6.8.1'
             qt_arch: linux_gcc_arm64
             deploy_arch: aarch64
@@ -72,7 +87,7 @@ jobs:
             libxcb-shape0-dev libxcb-xfixes0-dev libxcb-xinerama0-dev libxcb-sync-dev \
             libxcb-render-util0-dev libxcb-shm0-dev
           git config --global --add safe.directory '*'
-          echo "--- toolchain (glibc should be 2.35) ---"
+          echo "--- toolchain (glibc should be ${{ matrix.glibc_max }}) ---"
           gcc --version | head -1
           cmake --version | head -1
           ldd --version | head -1
@@ -102,7 +117,6 @@ jobs:
 
       - name: Build the project
         run: |
-          set -o pipefail
           echo "=== Qt ==="
           echo "QT_ROOT_DIR=$QT_ROOT_DIR"
           "$QT_ROOT_DIR/bin/moc" --version || true
@@ -110,11 +124,11 @@ jobs:
           cd build
           # On failure the log ends up in the job summary, which is much easier to look at
           # than a log that has to be downloaded from the web interface.
-          if ! cmake -DCMAKE_PREFIX_PATH="$QT_ROOT_DIR" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -GNinja .. 2>&1 | tee ../configure.log; then
+          if ! cmake -DCMAKE_PREFIX_PATH="$QT_ROOT_DIR" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -GNinja .. > ../configure.log 2>&1; then
             { echo '### CMake configure failed'; echo '```'; tail -n 150 ../configure.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
-          if ! cmake --build . --target all --config Release --parallel 2>&1 | tee ../build.log; then
+          if ! cmake --build . --target all --config Release --parallel > ../build.log 2>&1; then
             { echo '### Build failed'; echo '```'; tail -n 200 ../build.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
@@ -144,13 +158,16 @@ jobs:
         run: |
           chmod +x ./package/${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.deploy_arch }}.AppImage
           ./package/${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.deploy_arch }}.AppImage --appimage-extract > /dev/null
-          echo "=== GLIBC versions referenced by the bundle (must not exceed 2.35) ==="
+          echo "=== GLIBC versions referenced by the bundle (must not exceed ${{ matrix.glibc_max }}) ==="
           find squashfs-root/usr/bin squashfs-root/usr/lib -type f \
             \( -name '*.so*' -o -path '*/usr/bin/*' \) \
             -exec sh -c 'objdump -T "$1" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*"' _ {} \; \
             | sort -uV || true
 
       - name: Build Debian package
+        env:
+          # the bundled Qt and system libraries set the floor for libc6
+          MIN_LIBC: ${{ matrix.libc_min }}
         run: bash packaging/make-deb.sh squashfs-root "${appVersion#v}" ${{ matrix.deb_arch }} ./package
 
       - name: Upload artifact
