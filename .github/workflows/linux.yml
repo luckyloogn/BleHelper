@@ -7,7 +7,7 @@ on:
     branches:
       - main
       # TODO: remove this branch before merging into main, it is only here to
-      # let the AppImage build be verified on the feature branch.
+      # let the packages be verified on the feature branch.
       - fix/appimage-oldest-lts-build
     tags:
       - '*'
@@ -17,12 +17,12 @@ on:
 
 jobs:
   build:
-    name: Build and release
+    name: Build ${{ matrix.arch }}
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
 
-    # AppImages must be built on the oldest still-supported Ubuntu LTS.
+    # Packages must be built on the oldest still-supported Ubuntu LTS.
     # linuxdeploy bundles system libraries (libsystemd / libkrb5 / libgcrypt / libxkbcommon /
     # libglib / libdbus ...) from the build machine, so building on Ubuntu 24.04 produces a
     # bundle that requires GLIBC_2.38 and crashes on older distributions.
@@ -32,14 +32,28 @@ jobs:
       image: ubuntu:22.04
 
     strategy:
+      fail-fast: false
       matrix:
-        qt_ver: ['6.8.1']
-        qt_arch: ['linux_gcc_64']
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+            qt_ver: '6.8.1'
+            qt_arch: linux_gcc_64
+            deploy_arch: x86_64
+            deb_arch: amd64
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            qt_ver: '6.8.1'
+            qt_arch: linux_gcc_arm64
+            deploy_arch: aarch64
+            deb_arch: arm64
 
     env:
       targetName: BleHelper
-      # the version part of the AppImage name: the tag for a tag build, the branch otherwise
-      appVersion: ${{ github.ref_name }}
+      # Version used in the file names: the tag on a tag build. Branch and pull request builds
+      # are never released, and their ref name ("fix/something") contains a slash, which cannot
+      # appear in a file name, so they get a build number instead.
+      appVersion: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('dev-{0}', github.run_number) }}
       # containers usually have no FUSE, so let linuxdeploy / appimagetool extract-and-run
       APPIMAGE_EXTRACT_AND_RUN: 1
       DEBIAN_FRONTEND: noninteractive
@@ -50,7 +64,7 @@ jobs:
           apt-get update
           apt-get install -y --no-install-recommends \
             ca-certificates curl wget git sudo zip unzip xz-utils \
-            build-essential cmake ninja-build \
+            build-essential cmake ninja-build dpkg \
             file patchelf zstd libfuse2 openssl \
             python3 python3-pip python-is-python3 \
             libxcb-cursor0 libgl1-mesa-dev libxcb1-dev libgtk-3-dev libxkbcommon-x11-dev \
@@ -102,38 +116,44 @@ jobs:
           cp ./build/BleHelper/BleHelper ./dist/${{ env.targetName }}
           cp -r ./build/BleHelper/i18n ./dist/usr/bin/i18n/
 
-      - name: Package
+      - name: Build AppImage
         run: |
           # make sure Qt plugin finds QML sources so it can deploy the imported files
           export QML_SOURCES_PATHS=./
-          linuxdeploy-x86_64.AppImage --plugin=qt --output=appimage --create-desktop-file --icon-file=./dist/${{ env.targetName }}.svg --executable=./dist/${{ env.targetName }} --appdir ./dist/
+          # the tool is named after the architecture it was downloaded for
+          LINUXDEPLOY=$(command -v linuxdeploy-${{ matrix.deploy_arch }}.AppImage || command -v linuxdeploy)
+          "$LINUXDEPLOY" --plugin=qt --output=appimage --create-desktop-file --icon-file=./dist/${{ env.targetName }}.svg --executable=./dist/${{ env.targetName }} --appdir ./dist/
           # AppImage naming convention: <Name>-<Version>-<Arch>.AppImage, must not contain "linux"
-          mv ${{ env.targetName }}-*.AppImage ./package/${{ env.targetName }}-${{ env.appVersion }}-x86_64.AppImage
+          mv ${{ env.targetName }}-*.AppImage ./package/${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.deploy_arch }}.AppImage
 
-      - name: Check bundled glibc requirement
+      # Unpacks the AppImage once: the payload is what the other formats are built from, so they
+      # ship exactly the same files, and the GLIBC versions it needs can be checked here.
+      - name: Unpack and check the AppImage payload
         run: |
-          chmod +x ./package/${{ env.targetName }}-${{ env.appVersion }}-x86_64.AppImage
-          ./package/${{ env.targetName }}-${{ env.appVersion }}-x86_64.AppImage --appimage-extract > /dev/null
+          chmod +x ./package/${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.deploy_arch }}.AppImage
+          ./package/${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.deploy_arch }}.AppImage --appimage-extract > /dev/null
           echo "=== GLIBC versions referenced by the bundle (must not exceed 2.35) ==="
           find squashfs-root/usr/bin squashfs-root/usr/lib -type f \
             \( -name '*.so*' -o -path '*/usr/bin/*' \) \
             -exec sh -c 'objdump -T "$1" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*"' _ {} \; \
             | sort -uV || true
-          rm -rf squashfs-root
+
+      - name: Build Debian package
+        run: bash packaging/make-deb.sh squashfs-root "${appVersion#v}" ${{ matrix.deb_arch }} ./package
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.targetName }}-${{ env.appVersion }}-x86_64
-          path: ./package/${{ env.targetName }}-${{ env.appVersion }}-x86_64.AppImage
+          name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.deploy_arch }}
+          path: ./package/*
+          if-no-files-found: error
 
       - name: Upload release
         if: startsWith(github.event.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          # the file is already named after the convention, so no asset_name is needed:
-          # <Name>-<Version>-<Arch>.AppImage, must not contain "linux"
-          file: ./package/${{ env.targetName }}-${{ env.appVersion }}-x86_64.AppImage
+          file: ./package/*
+          file_glob: true
           tag: ${{ github.ref }}
           overwrite: true

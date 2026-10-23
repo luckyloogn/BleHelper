@@ -35,9 +35,25 @@
 
 ### Linux
 
-1. 从 [Releases](https://github.com/luckyloogn/BleHelper/releases/latest) 页面下载最新的 **AppImage** 软件包 (BleHelper_x.x.x_linux_gcc_64_Qt6.8.1.AppImage)
-2. 使用终端命令 `chmod +x BleHelper_x.x.x_linux_gcc_64_Qt6.8.1.AppImage` 赋予执行权限
-3. 通过终端命令 `./BleHelper_x.x.x_linux_gcc_64_Qt6.8.1.AppImage` 运行程序
+从 [Releases](https://github.com/luckyloogn/BleHelper/releases/latest) 页面下载最新的软件包，按需选择格式：
+
+| 格式 | 文件 | 说明 |
+| --- | --- | --- |
+| AppImage | `BleHelper-x.x.x-x86_64.AppImage`<br>`BleHelper-x.x.x-aarch64.AppImage` | 免安装，任意较新的发行版都能跑 |
+| deb | `blehelper_x.x.x_amd64.deb`<br>`blehelper_x.x.x_arm64.deb` | 适用于 Ubuntu 22.04+ / Debian 12+ |
+
+**AppImage**
+
+1. 使用终端命令 `chmod +x BleHelper-x.x.x-x86_64.AppImage` 赋予执行权限
+2. 通过终端命令 `./BleHelper-x.x.x-x86_64.AppImage` 运行程序
+
+**deb**
+
+```bash
+sudo apt install ./blehelper_x.x.x_amd64.deb
+```
+
+安装后可从应用菜单启动，或执行 `blehelper`。卸载：`sudo apt remove blehelper`。
 
 ## 构建
 
