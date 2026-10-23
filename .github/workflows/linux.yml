@@ -305,6 +305,30 @@ jobs:
             -noappend -comp xz -all-root -no-xattrs -no-progress
           ls -l ./snap-out
 
+      # TEMPORARY: the job log cannot be read from outside the Actions UI, so the output of the
+      # packing commands is put into an artifact name, which does show up in the API.
+      - name: Collect snap diagnostics
+        if: failure()
+        run: |
+          {
+            echo "mksquashfs-path:"; command -v mksquashfs || echo MISSING
+            echo "apt:"; sudo apt-get install -y squashfs-tools 2>&1 | tail -n 5
+            echo "pack:"; sudo mksquashfs snap-tree /tmp/t.snap -noappend -comp xz -all-root -no-xattrs -no-progress 2>&1 | tail -n 8
+            echo "exit:$?"
+            echo "snapyaml:"; head -n 6 snap-tree/meta/snap.yaml
+          } > /tmp/snap-tail.txt 2>&1
+          DIAG=$(tr -c 'a-zA-Z0-9._-' '-' < /tmp/snap-tail.txt | cut -c1-220)
+          echo "DIAG=$DIAG" >> "$GITHUB_ENV"
+          cat /tmp/snap-tail.txt
+
+      - name: Upload snap diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapdiag-${{ matrix.arch }}-${{ env.DIAG }}
+          path: /tmp/snap-tail.txt
+          if-no-files-found: warn
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
