@@ -15,6 +15,13 @@ on:
     branches:
       - main
 
+env:
+  targetName: BleHelper
+  # Version used in the file names: the tag on a tag build. Branch and pull request builds are
+  # never released, and their ref name ("fix/something") contains a slash, which cannot appear
+  # in a file name, so they get a build number instead.
+  appVersion: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('dev-{0}', github.run_number) }}
+
 jobs:
   build:
     name: Build ${{ matrix.arch }}
@@ -50,6 +57,7 @@ jobs:
             qt_arch: linux_gcc_64
             deploy_arch: x86_64
             deb_arch: amd64
+            snap_base: core22
           # Qt ships its arm64 Linux binaries only built on Ubuntu 24.04, they need GLIBC_2.38
           # and GLIBCXX_3.4.32, so even qmlimportscanner cannot run inside a 22.04 container.
           # arm64 therefore targets Ubuntu 24.04+ only.
@@ -62,13 +70,9 @@ jobs:
             qt_arch: linux_gcc_arm64
             deploy_arch: aarch64
             deb_arch: arm64
+            snap_base: core24
 
     env:
-      targetName: BleHelper
-      # Version used in the file names: the tag on a tag build. Branch and pull request builds
-      # are never released, and their ref name ("fix/something") contains a slash, which cannot
-      # appear in a file name, so they get a build number instead.
-      appVersion: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('dev-{0}', github.run_number) }}
       # containers usually have no FUSE, so let linuxdeploy / appimagetool extract-and-run
       APPIMAGE_EXTRACT_AND_RUN: 1
       DEBIAN_FRONTEND: noninteractive
@@ -188,11 +192,28 @@ jobs:
           MIN_LIBC: ${{ matrix.libc_min }}
         run: bash packaging/make-deb.sh squashfs-root "${appVersion#v}" ${{ matrix.deb_arch }} ./package
 
+      # snapd is not available inside the build container, so only the tree is prepared here and
+      # turned into a .snap by the "snap" job below.
+      - name: Build the snap tree
+        env:
+          SNAP_BASE: ${{ matrix.snap_base }}
+        run: |
+          bash packaging/make-snap-tree.sh squashfs-root "${appVersion#v}" ${{ matrix.arch }} ./snap
+          tar -C ./snap -czf ./snap-tree.tar.gz snap-tree
+          rm -rf ./snap
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.deploy_arch }}
           path: ./package/*
+          if-no-files-found: error
+
+      - name: Upload the snap tree
+        uses: actions/upload-artifact@v4
+        with:
+          name: snap-tree-${{ matrix.arch }}
+          path: ./snap-tree.tar.gz
           if-no-files-found: error
 
       - name: Upload release
@@ -201,6 +222,57 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./package/*
+          file_glob: true
+          tag: ${{ github.ref }}
+          overwrite: true
+
+  snap:
+    name: Pack snap ${{ matrix.arch }}
+    needs: build
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    # "snap pack" only turns a directory into a squashfs, it does not run anything of the
+    # package, so both architectures can be packed on the same machine.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            snap_base: core22
+          - arch: arm64
+            snap_base: core24
+
+    steps:
+      - name: Download the snap tree
+        uses: actions/download-artifact@v4
+        with:
+          name: snap-tree-${{ matrix.arch }}
+
+      - name: Pack the snap
+        run: |
+          tar -xzf snap-tree.tar.gz
+          # snap pack squashes the tree with mksquashfs and insists on root-owned files
+          sudo apt-get update -qq
+          sudo apt-get install -y squashfs-tools
+          sudo chown -R root:root snap-tree
+          sudo snap pack snap-tree ./snap-out
+          ls -l ./snap-out
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.arch }}-snap
+          path: ./snap-out/*.snap
+          if-no-files-found: error
+
+      - name: Upload release
+        if: startsWith(github.event.ref, 'refs/tags/')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./snap-out/*.snap
           file_glob: true
           tag: ${{ github.ref }}
           overwrite: true

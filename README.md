@@ -41,6 +41,7 @@
 | --- | --- | --- |
 | AppImage | `BleHelper-x.x.x-x86_64.AppImage`<br>`BleHelper-x.x.x-aarch64.AppImage` | 免安装，任意较新的发行版都能跑 |
 | deb | `blehelper_x.x.x_amd64.deb`<br>`blehelper_x.x.x_arm64.deb` | 适用于 Ubuntu 22.04+ / Debian 12+ |
+| snap | `blehelper_x.x.x_amd64.snap`<br>`blehelper_x.x.x_arm64.snap` | 适用于已安装 snapd 的发行版 |
 
 **AppImage**
 
@@ -54,6 +55,16 @@ sudo apt install ./blehelper_x.x.x_amd64.deb
 ```
 
 安装后可从应用菜单启动，或执行 `blehelper`。卸载：`sudo apt remove blehelper`。
+
+**snap**
+
+需要 classic 权限（程序要通过 BlueZ 访问蓝牙硬件），本地安装时要带 `--classic --dangerous`：
+
+```bash
+sudo snap install --classic --dangerous ./blehelper_x.x.x_amd64.snap
+```
+
+卸载：`sudo snap remove blehelper`。
 
 ## 构建
 
