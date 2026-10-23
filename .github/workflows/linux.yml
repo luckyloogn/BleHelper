@@ -105,36 +105,6 @@ jobs:
           cmake --version | head -1
           ldd --version | head -1
 
-      # TEMPORARY: the job log cannot be read from outside the Actions UI, so the tail of the
-      # apt output is put into an artifact name, which does show up in the API.
-      - name: Collect apt diagnostics
-        if: failure()
-        run: |
-          apt-get install -y --no-install-recommends \
-            ca-certificates curl wget git sudo zip unzip xz-utils \
-            build-essential cmake ninja-build dpkg \
-            file patchelf zstd libfuse2 openssl \
-            python3 python3-pip python-is-python3 \
-            libxcb-cursor0 libgl1-mesa-dev libxcb1-dev libgtk-3-dev libxkbcommon-x11-dev \
-            libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev \
-            libxcb-shape0-dev libxcb-xfixes0-dev libxcb-xinerama0-dev libxcb-sync-dev \
-            libxcb-render-util0-dev libxcb-shm0-dev > /tmp/apt-install.log 2>&1 || true
-          { echo "space:"; df -h / | tail -n 1
-            echo "errors:"; grep -E '^[EW]:' /tmp/apt-install.log | head -n 6 || true
-            echo "-- tail --"; tail -n 6 /tmp/apt-install.log; } > /tmp/apt-tail.txt
-          true
-          DIAG=$(tr -c 'a-zA-Z0-9._-' '-' < /tmp/apt-tail.txt | cut -c1-220)
-          echo "DIAG=$DIAG" >> "$GITHUB_ENV"
-          cat /tmp/apt-tail.txt
-
-      - name: Upload apt diagnostics
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: aptdiag-${{ matrix.arch }}-${{ env.DIAG }}
-          path: /tmp/apt-tail.txt
-          if-no-files-found: warn
-
       - name: Check out repository
         uses: actions/checkout@v4
         with:
@@ -296,55 +266,22 @@ jobs:
       - name: Pack the snap
         if: steps.tree.outcome == 'success'
         run: |
-          set -x
           tar -xzf snap-tree.tar.gz
           sudo apt-get update -qq
           sudo apt-get install -y squashfs-tools
-          command -v mksquashfs
-          # snap packs the tree with mksquashfs and insists on root-owned files
+          # mksquashfs writes the files as root, so the tree is handed to root as well
           sudo chown -R root:root snap-tree
-          cat snap-tree/meta/snap.yaml
           mkdir -p ./snap-out
-          VERSION=$(sed -n "s/^version: *//p" snap-tree/meta/snap.yaml | tr -d "'\"")
+          # Take the version from the environment instead of reading meta/snap.yaml: after the
+          # chown above that file belongs to root and the unprivileged runner user cannot read it.
+          VERSION="${{ env.appVersion }}"
+          VERSION="${VERSION#v}"
           # A snap is nothing but a squashfs of the tree plus meta/snap.yaml. "snap pack" cannot
           # be relied on here: the runner images block snapd from being installed, so the
           # squashfs is built directly.
           sudo mksquashfs snap-tree "./snap-out/blehelper_${VERSION}_${{ matrix.arch }}.snap" \
             -noappend -comp xz -all-root -no-xattrs -no-progress
           ls -l ./snap-out
-
-      # TEMPORARY: the job log cannot be read from outside the Actions UI, so the output of the
-      # packing commands is put into an artifact name, which does show up in the API.
-      - name: Collect snap diagnostics
-        if: failure()
-        run: |
-          {
-            echo "mksqpath:"; command -v mksquashfs || echo MISSING
-            echo "yaml:"; cat snap-tree/meta/snap.yaml 2>&1 | head -n 3 || true
-            sudo mksquashfs snap-tree /tmp/t.snap -noappend -comp xz -all-root -no-xattrs -no-progress > /tmp/pack.log 2>&1 || true
-            echo "exit:$?"; tail -n 10 /tmp/pack.log || true
-          } > /tmp/snap-tail.txt 2>&1
-          true
-          DIAG=$(tr -c 'a-zA-Z0-9._-' '-' < /tmp/snap-tail.txt)
-          echo "DIAG_A=$(printf '%s' "$DIAG" | cut -c1-200)" >> "$GITHUB_ENV"
-          echo "DIAG_B=$(printf '%s' "$DIAG" | cut -c201-400)" >> "$GITHUB_ENV"
-          cat /tmp/snap-tail.txt
-
-      - name: Upload snap diagnostics
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: snapdiagA-${{ matrix.arch }}-${{ env.DIAG_A }}
-          path: /tmp/snap-tail.txt
-          if-no-files-found: warn
-
-      - name: Upload snap diagnostics (continued)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: snapdiagB-${{ matrix.arch }}-${{ env.DIAG_B }}
-          path: /tmp/pack.log
-          if-no-files-found: warn
 
       - name: Upload artifact
         if: steps.tree.outcome == 'success'
