@@ -257,19 +257,21 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y squashfs-tools
           sudo chown -R root:root snap-tree
-          command -v snap >/dev/null || sudo apt-get install -y snapd
           echo "=== snap.yaml ==="
           cat snap-tree/meta/snap.yaml
           mkdir -p ./snap-out
-          # A snap is nothing but a squashfs of the tree plus meta/snap.yaml, so mksquashfs is
-          # used directly whenever the snapd command line is not usable on the runner.
-          if ! sudo snap pack snap-tree ./snap-out; then
-            echo "snap pack failed, packing with mksquashfs instead"
-            VERSION=$(sed -n "s/^version: *//p" snap-tree/meta/snap.yaml | tr -d "'\"")
+          VERSION=$(sed -n "s/^version: *//p" snap-tree/meta/snap.yaml | tr -d "'\"")
+          # A snap is nothing but a squashfs of the tree plus meta/snap.yaml. The runner images
+          # block snapd from being installed (nosnap.pref), so "snap pack" is only used when it
+          # happens to be there and mksquashfs does the job otherwise.
+          if command -v snap >/dev/null; then
+            sudo snap pack snap-tree ./snap-out
+          else
             sudo mksquashfs snap-tree "./snap-out/blehelper_${VERSION}_${{ matrix.arch }}.snap" \
               -noappend -comp xz -all-root -no-xattrs -no-progress
           fi
           ls -l ./snap-out
+          unsquashfs -n -ll ./snap-out/*.snap > /dev/null && echo "snap reads back fine"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
