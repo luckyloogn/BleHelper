@@ -252,26 +252,22 @@ jobs:
 
       - name: Pack the snap
         run: |
+          set -x
           tar -xzf snap-tree.tar.gz
-          # snap packs the tree with mksquashfs and insists on root-owned files
           sudo apt-get update -qq
           sudo apt-get install -y squashfs-tools
+          command -v mksquashfs
+          # snap packs the tree with mksquashfs and insists on root-owned files
           sudo chown -R root:root snap-tree
-          echo "=== snap.yaml ==="
           cat snap-tree/meta/snap.yaml
           mkdir -p ./snap-out
           VERSION=$(sed -n "s/^version: *//p" snap-tree/meta/snap.yaml | tr -d "'\"")
-          # A snap is nothing but a squashfs of the tree plus meta/snap.yaml. The runner images
-          # block snapd from being installed (nosnap.pref), so "snap pack" is only used when it
-          # happens to be there and mksquashfs does the job otherwise.
-          if command -v snap >/dev/null; then
-            sudo snap pack snap-tree ./snap-out
-          else
-            sudo mksquashfs snap-tree "./snap-out/blehelper_${VERSION}_${{ matrix.arch }}.snap" \
-              -noappend -comp xz -all-root -no-xattrs -no-progress
-          fi
+          # A snap is nothing but a squashfs of the tree plus meta/snap.yaml. "snap pack" cannot
+          # be relied on here: the runner images block snapd from being installed, so the
+          # squashfs is built directly.
+          sudo mksquashfs snap-tree "./snap-out/blehelper_${VERSION}_${{ matrix.arch }}.snap" \
+            -noappend -comp xz -all-root -no-xattrs -no-progress
           ls -l ./snap-out
-          unsquashfs -n -ll ./snap-out/*.snap > /dev/null && echo "snap reads back fine"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
