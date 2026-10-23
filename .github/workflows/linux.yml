@@ -6,6 +6,9 @@ on:
   push:
     branches:
       - main
+      # TODO: remove this branch before merging into main, it is only here to
+      # let the AppImage build be verified on the feature branch.
+      - fix/appimage-oldest-lts-build
     tags:
       - '*'
   pull_request:
