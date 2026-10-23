@@ -81,7 +81,7 @@ jobs:
             ca-certificates curl wget git sudo zip unzip xz-utils \
             build-essential cmake ninja-build dpkg \
             file patchelf zstd libfuse2 openssl \
-            python3 python3-pip python3-venv python-is-python3 \
+            python3 python3-pip python-is-python3 \
             libxcb-cursor0 libgl1-mesa-dev libxcb1-dev libgtk-3-dev libxkbcommon-x11-dev \
             libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev \
             libxcb-shape0-dev libxcb-xfixes0-dev libxcb-xinerama0-dev libxcb-sync-dev \
@@ -98,16 +98,22 @@ jobs:
           submodules: recursive
 
       # install-qt-action installs aqtinstall with pip. Ubuntu 24.04 marks the system Python as
-      # externally managed (PEP 668), so that pip call is refused there. A venv has no such
-      # restriction and, unlike the hosted tool cache, it belongs to this container, so it can
-      # never demand a newer GLIBC than the container provides.
+      # externally managed (PEP 668), so that pip call is refused there; a venv has no such
+      # restriction, and being the container's own interpreter it can never demand a newer
+      # GLIBC than the container provides (unlike the hosted tool cache). Ubuntu 22.04 has no
+      # such marker, so there the system Python is used as it is.
       - name: Prepare a Python for aqtinstall
         run: |
-          python3 -m venv /opt/aqt-venv
-          /opt/aqt-venv/bin/python -m pip install --upgrade pip
-          echo "/opt/aqt-venv/bin" >> "$GITHUB_PATH"
-          echo "--- python that install-qt-action will use ---"
-          /opt/aqt-venv/bin/python --version
+          if python3 -c 'import os, sys, sysconfig; sys.exit(0 if os.path.exists(os.path.join(sysconfig.get_path("stdlib"), "EXTERNALLY-MANAGED")) else 1)'; then
+            echo "system python is externally managed, using a venv"
+            apt-get install -y --no-install-recommends python3-venv
+            python3 -m venv /opt/aqt-venv
+            /opt/aqt-venv/bin/python -m pip install --upgrade pip
+            echo "/opt/aqt-venv/bin" >> "$GITHUB_PATH"
+          else
+            echo "system python can be used as it is"
+          fi
+          python3 --version
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
