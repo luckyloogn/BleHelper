@@ -80,8 +80,17 @@ jobs:
     steps:
       - name: Install container prerequisites
         run: |
-          apt-get update
-          apt-get install -y --no-install-recommends \
+          # the archive mirrors fail every now and then, so give apt a couple of tries
+          retry() {
+            for i in 1 2 3; do
+              "$@" && return 0
+              echo "failed, retrying: $*"
+              sleep 15
+            done
+            return 1
+          }
+          retry apt-get update
+          retry apt-get install -y --no-install-recommends \
             ca-certificates curl wget git sudo zip unzip xz-utils \
             build-essential cmake ninja-build dpkg \
             file patchelf zstd libfuse2 openssl \
