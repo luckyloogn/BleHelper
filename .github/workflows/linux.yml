@@ -102,10 +102,22 @@ jobs:
 
       - name: Build the project
         run: |
-          mkdir build
+          set -o pipefail
+          echo "=== Qt ==="
+          echo "QT_ROOT_DIR=$QT_ROOT_DIR"
+          "$QT_ROOT_DIR/bin/moc" --version || true
+          mkdir -p build
           cd build
-          cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -GNinja ..
-          cmake --build . --target all --config Release --parallel
+          # On failure the log ends up in the job summary, which is much easier to look at
+          # than a log that has to be downloaded from the web interface.
+          if ! cmake -DCMAKE_PREFIX_PATH="$QT_ROOT_DIR" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -GNinja .. 2>&1 | tee ../configure.log; then
+            { echo '### CMake configure failed'; echo '```'; tail -n 150 ../configure.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          if ! cmake --build . --target all --config Release --parallel 2>&1 | tee ../build.log; then
+            { echo '### Build failed'; echo '```'; tail -n 200 ../build.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
 
       - name: Copy files
         run: |
