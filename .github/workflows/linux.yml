@@ -105,6 +105,25 @@ jobs:
           cmake --version | head -1
           ldd --version | head -1
 
+      # TEMPORARY: the job log cannot be read from outside the Actions UI, so the tail of the
+      # apt output is put into an artifact name, which does show up in the API.
+      - name: Collect apt diagnostics
+        if: failure()
+        run: |
+          apt-get update > /tmp/apt-update.log 2>&1
+          tail -n 15 /tmp/apt-update.log > /tmp/apt-tail.txt
+          DIAG=$(tr -c 'a-zA-Z0-9._-' '-' < /tmp/apt-tail.txt | cut -c1-150)
+          echo "DIAG=$DIAG" >> "$GITHUB_ENV"
+          cat /tmp/apt-tail.txt
+
+      - name: Upload apt diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aptdiag-${{ matrix.arch }}-${{ env.DIAG }}
+          path: /tmp/apt-tail.txt
+          if-no-files-found: warn
+
       - name: Check out repository
         uses: actions/checkout@v4
         with:
