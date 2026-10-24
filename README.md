@@ -30,18 +30,22 @@
 
 ### Windows
 
-1. 从 [Releases](https://github.com/luckyloogn/BleHelper/releases/latest) 页面下载最新的 **exe** 安装程序 (BleHelper_x.x.x_win64_msvc2022_64_Qt6.8.1.exe)
-2. 双击运行安装程序，按照向导完成安装即可
+从 [Releases](https://github.com/luckyloogn/BleHelper/releases/latest) 页面下载最新的软件包，按需选择：
+
+| 格式 | 文件 | 说明 |
+| --- | --- | --- |
+| 安装包 | `BleHelper-x.x.x-x64-setup.exe` | 双击运行，按向导完成安装，自动创建开始菜单和桌面快捷方式 |
+| 免安装 | `BleHelper-x.x.x-x64.zip` | 解压后直接运行 `BleHelper.exe` |
 
 ### Linux
 
 从 [Releases](https://github.com/luckyloogn/BleHelper/releases/latest) 页面下载最新的软件包，按需选择格式：
 
-| 格式 | 文件 | 说明 |
+| 格式 | 文件 | 系统要求 |
 | --- | --- | --- |
-| AppImage | `BleHelper-x.x.x-x86_64.AppImage`<br>`BleHelper-x.x.x-aarch64.AppImage` | 免安装，任意较新的发行版都能跑 |
-| deb | `blehelper_x.x.x_amd64.deb`<br>`blehelper_x.x.x_arm64.deb` | 适用于 Ubuntu 22.04+ / Debian 12+ |
-| snap | `blehelper_x.x.x_amd64.snap`<br>`blehelper_x.x.x_arm64.snap` | 适用于已安装 snapd 的发行版 |
+| AppImage | `BleHelper-x.x.x-x86_64.AppImage`<br>`BleHelper-x.x.x-aarch64.AppImage` | 免安装。x86_64 需 glibc ≥ 2.34（Ubuntu 22.04+ / Debian 12+），aarch64 需 glibc ≥ 2.38（Ubuntu 24.04+） |
+| deb | `blehelper_x.x.x_amd64.deb`<br>`blehelper_x.x.x_arm64.deb` | 要求同上，按架构对应 |
+| snap | `blehelper_x.x.x_amd64.snap`<br>`blehelper_x.x.x_arm64.snap` | 需要 snapd，base 分别为 core22 / core24 |
 
 **AppImage**
 
