@@ -30,7 +30,7 @@ APP=BleHelper
 PKG=blehelper
 PREFIX=/opt/blehelper
 
-# A version has to start with a digit; branch builds get something like "dev-37".
+# A version has to start with a digit; branch builds get something like "dev37".
 case "$VERSION" in
   [0-9]*) ;;
   *) VERSION="0~$VERSION" ;;

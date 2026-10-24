@@ -21,7 +21,7 @@ env:
   # Version used in the file names: the tag on a tag build. Branch and pull request builds are
   # never released, and their ref name ("fix/something") contains a slash, which cannot appear
   # in a file name, so they get a build number instead.
-  appVersion: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('dev_{0}', github.run_number) }}
+  appVersion: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('dev{0}', github.run_number) }}
 
 jobs:
   build:
