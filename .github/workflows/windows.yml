@@ -6,43 +6,51 @@ on:
   push:
     branches:
       - main
+      # TODO: remove this branch before merging into main, it is only here to
+      # let the packages be verified on the feature branch.
+      - fix/appimage-oldest-lts-build
     tags:
       - '*'
   pull_request:
     branches:
       - main
 
+env:
+  targetName: BleHelper.exe
+  fileName: BleHelper
+  # Version used in the file names: the tag on a tag build. Branch and pull request builds are
+  # never released, and their ref name ("fix/something") contains a slash, which cannot appear
+  # in a file name, so they get a build number instead.
+  appVersion: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('dev-{0}', github.run_number) }}
+
 jobs:
   build:
-    name: Build and release
+    name: Build and release (${{ matrix.arch }})
     permissions:
       contents: write
     strategy:
+      fail-fast: false
       matrix:
-        os: [windows-latest]
         include:
-          - qt_ver: 6.8.1        
+          - arch: x64
+            os: windows-latest
+            qt_ver: 6.8.1
             qt_arch: win64_msvc2022_64
             msvc_arch: x64
-            qt_arch_install: msvc2022_64  
 
     runs-on: ${{ matrix.os }}
 
-    env:
-      targetName: BleHelper.exe
-      fileName: BleHelper
-
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
-          
+
       - name: Setup ninja
         uses: seanmiddleditch/gha-setup-ninja@v5
         with:
           version: 1.10.2
-          
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
@@ -51,7 +59,7 @@ jobs:
           cache: 'true'
           cache-key-prefix: 'install-qt-action'
           modules: 'qtshadertools qt5compat qtconnectivity'
-          
+
       # windows-latest now runs Windows Server 2025 with Visual Studio 2026,
       # whose installation path is no longer fixed, so locate it via vswhere
       - name: Build and package the project
@@ -105,24 +113,63 @@ jobs:
             exit 1
           }
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.fileName }}_${{ matrix.qt_arch }}_Qt${{ matrix.qt_ver }}
-          path: dist
+      # The portable build: the same files the installer would copy, zipped for people who do not
+      # want to run a setup program.
+      - name: Build the portable zip
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path package | Out-Null
+          $zip = "package/${{ env.fileName }}-${{ env.appVersion }}-${{ matrix.arch }}.zip"
+          if (Test-Path $zip) { Remove-Item $zip -Force }
+          Compress-Archive -Path dist/* -DestinationPath $zip -CompressionLevel Optimal
+          Get-Item $zip | Select-Object Name, Length
 
-      - name: Create installer 
+      - name: Upload the portable zip
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.fileName }}-${{ env.appVersion }}-${{ matrix.arch }}-zip
+          path: package/*.zip
+          if-no-files-found: error
+
+      - name: Create installer
         if: startsWith(github.event.ref, 'refs/tags/')
         uses: zhuzichu520/inno-setup-action@v1.0.1
         with:
           filepath: package/InstallerScript.iss
 
-      - name: Upload release
+      # Inno Setup writes package/installer.exe; give it the same name scheme as the other formats
+      - name: Rename the installer
+        if: startsWith(github.event.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          $installer = "package/${{ env.fileName }}-${{ env.appVersion }}-${{ matrix.arch }}-setup.exe"
+          Move-Item -Path "package/installer.exe" -Destination $installer -Force
+          Get-Item $installer | Select-Object Name, Length
+
+      - name: Upload the installer
+        if: startsWith(github.event.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.fileName }}-${{ env.appVersion }}-${{ matrix.arch }}-installer
+          path: package/*-setup.exe
+          if-no-files-found: error
+
+      - name: Upload release (portable zip)
         if: startsWith(github.event.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: package/installer.exe
-          asset_name: ${{ env.fileName }}_${{ github.ref_name }}_${{ matrix.qt_arch }}_Qt${{ matrix.qt_ver }}.exe
+          file: package/*.zip
+          file_glob: true
           tag: ${{ github.ref }}
-          overwrite: true 
+          overwrite: true
+
+      - name: Upload release (installer)
+        if: startsWith(github.event.ref, 'refs/tags/')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: package/*-setup.exe
+          file_glob: true
+          tag: ${{ github.ref }}
+          overwrite: true
