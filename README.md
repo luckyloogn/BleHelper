@@ -34,8 +34,8 @@
 
 | 格式 | 文件 | 说明 |
 | --- | --- | --- |
-| 安装包 | `BleHelper-x.x.x-x64-setup.exe` | 双击运行，按向导完成安装，自动创建开始菜单和桌面快捷方式 |
-| 免安装 | `BleHelper-x.x.x-x64.zip` | 解压后直接运行 `BleHelper.exe` |
+| 安装包 | `blehelper-x.x.x-x64-setup.exe` | 双击运行，按向导完成安装，自动创建开始菜单和桌面快捷方式 |
+| 免安装 | `blehelper-x.x.x-x64.zip` | 解压后直接运行 `BleHelper.exe` |
 
 ### Linux
 
@@ -43,14 +43,14 @@
 
 | 格式 | 文件 | 系统要求 |
 | --- | --- | --- |
-| AppImage | `BleHelper-x.x.x-x86_64.AppImage`<br>`BleHelper-x.x.x-aarch64.AppImage` | 免安装。x86_64 需 glibc ≥ 2.34（Ubuntu 22.04+ / Debian 12+），aarch64 需 glibc ≥ 2.38（Ubuntu 24.04+） |
+| AppImage | `blehelper-x.x.x-x86_64.AppImage`<br>`blehelper-x.x.x-aarch64.AppImage` | 免安装。x86_64 需 glibc ≥ 2.34（Ubuntu 22.04+ / Debian 12+），aarch64 需 glibc ≥ 2.38（Ubuntu 24.04+） |
 | deb | `blehelper_x.x.x_amd64.deb`<br>`blehelper_x.x.x_arm64.deb` | 要求同上，按架构对应 |
 | snap | `blehelper_x.x.x_amd64.snap`<br>`blehelper_x.x.x_arm64.snap` | 需要 snapd，base 分别为 core22 / core24 |
 
 **AppImage**
 
-1. 使用终端命令 `chmod +x BleHelper-x.x.x-x86_64.AppImage` 赋予执行权限
-2. 通过终端命令 `./BleHelper-x.x.x-x86_64.AppImage` 运行程序
+1. 使用终端命令 `chmod +x blehelper-x.x.x-x86_64.AppImage` 赋予执行权限
+2. 通过终端命令 `./blehelper-x.x.x-x86_64.AppImage` 运行程序
 
 **deb**
 

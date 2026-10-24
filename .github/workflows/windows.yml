@@ -16,8 +16,8 @@ on:
       - main
 
 env:
-  targetName: BleHelper.exe
-  fileName: BleHelper
+  # name used in every produced file: lower case, matching the Linux packages
+  fileName: blehelper
   # Version used in the file names: the tag on a tag build. Branch and pull request builds are
   # never released, and their ref name ("fix/something") contains a slash, which cannot appear
   # in a file name, so they get a build number instead.
@@ -41,6 +41,14 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      # The version strings used in file names never carry the tag's "v", so that every produced
+      # file looks the same on the release page.
+      - name: Compute the package version
+        shell: pwsh
+        run: |
+          $version = "${{ env.appVersion }}".TrimStart("v")
+          Add-Content -Path $env:GITHUB_ENV -Value "PKG_VERSION=$version"
+
       - name: Check out repository
         uses: actions/checkout@v7
         with:
@@ -128,7 +136,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path package | Out-Null
-          $zip = "package/${{ env.fileName }}-${{ env.appVersion }}-${{ matrix.arch }}.zip"
+          $zip = "package/${{ env.fileName }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path dist/* -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -136,7 +144,7 @@ jobs:
       - name: Upload the portable zip
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.fileName }}-${{ env.appVersion }}-${{ matrix.arch }}-zip
+          name: ${{ env.fileName }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}-zip
           path: package/*.zip
           if-no-files-found: error
 
@@ -151,7 +159,7 @@ jobs:
         if: startsWith(github.event.ref, 'refs/tags/')
         shell: pwsh
         run: |
-          $installer = "package/${{ env.fileName }}-${{ env.appVersion }}-${{ matrix.arch }}-setup.exe"
+          $installer = "package/${{ env.fileName }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}-setup.exe"
           Move-Item -Path "package/installer.exe" -Destination $installer -Force
           Get-Item $installer | Select-Object Name, Length
 
@@ -159,7 +167,7 @@ jobs:
         if: startsWith(github.event.ref, 'refs/tags/')
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.fileName }}-${{ env.appVersion }}-${{ matrix.arch }}-installer
+          name: ${{ env.fileName }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}-installer
           path: package/*-setup.exe
           if-no-files-found: error
 
