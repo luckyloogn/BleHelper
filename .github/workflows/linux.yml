@@ -131,9 +131,12 @@ jobs:
           fi
           git config --global --add safe.directory '*'
           echo "--- toolchain (glibc should be ${{ matrix.glibc_max }}) ---"
-          gcc --version | head -1
-          cmake --version | head -1
-          ldd --version | head -1
+          # no "cmd | head -1" here: head exits after the first line, and if the writer has not
+          # finished it dies of SIGPIPE, which "-o pipefail" turns into exit code 141 and a
+          # failed step. The full output is a handful of lines, so it is printed as it is.
+          gcc --version
+          cmake --version
+          ldd --version
 
       - name: Check out repository
         uses: actions/checkout@v7
