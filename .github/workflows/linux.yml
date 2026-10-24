@@ -46,6 +46,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # "arch" is the Debian name (used by dpkg, snap and the artifact names), "deploy_arch" is
+        # the name AppImage tooling uses; both refer to the same CPU architecture.
         include:
           - arch: amd64
             runner: ubuntu-latest
@@ -56,7 +58,6 @@ jobs:
             qt_ver: '6.8.1'
             qt_arch: linux_gcc_64
             deploy_arch: x86_64
-            deb_arch: amd64
             snap_base: core22
           # Qt ships its arm64 Linux binaries only built on Ubuntu 24.04, they need GLIBC_2.38
           # and GLIBCXX_3.4.32, so even qmlimportscanner cannot run inside a 22.04 container.
@@ -69,7 +70,6 @@ jobs:
             qt_ver: '6.8.1'
             qt_arch: linux_gcc_arm64
             deploy_arch: aarch64
-            deb_arch: arm64
             snap_base: core24
 
     env:
@@ -199,7 +199,7 @@ jobs:
         env:
           # the bundled Qt and system libraries set the floor for libc6
           MIN_LIBC: ${{ matrix.libc_min }}
-        run: bash packaging/make-deb.sh squashfs-root "${appVersion#v}" ${{ matrix.deb_arch }} ./package
+        run: bash packaging/make-deb.sh squashfs-root "${appVersion#v}" ${{ matrix.arch }} ./package
 
       # snapd is not available inside the build container, so only the tree is prepared here and
       # turned into a .snap by the "snap" job below.
@@ -211,17 +211,28 @@ jobs:
           tar -C ./snap -czf ./snap-tree.tar.gz snap-tree
           rm -rf ./snap
 
-      - name: Upload artifact
+      # Every artifact is named <Name>-<version>-<arch>-<format>, with the Debian architecture
+      # names (amd64 / arm64) used consistently, so the list in the Actions UI reads as one set.
+      # Only the files inside are named according to their own format's convention.
+      - name: Upload the AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.deploy_arch }}
-          path: ./package/*
+          name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.arch }}-appimage
+          path: ./package/*.AppImage
           if-no-files-found: error
 
+      - name: Upload the Debian package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.arch }}-deb
+          path: ./package/*.deb
+          if-no-files-found: error
+
+      # Intermediate product: the tree that the "snap" job turns into a .snap
       - name: Upload the snap tree
         uses: actions/upload-artifact@v4
         with:
-          name: snap-tree-${{ matrix.arch }}
+          name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.arch }}-snap-tree
           path: ./snap-tree.tar.gz
           if-no-files-found: error
 
@@ -261,7 +272,7 @@ jobs:
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
-          name: snap-tree-${{ matrix.arch }}
+          name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.arch }}-snap-tree
 
       - name: Pack the snap
         if: steps.tree.outcome == 'success'
@@ -283,7 +294,7 @@ jobs:
             -noappend -comp xz -all-root -no-xattrs -no-progress
           ls -l ./snap-out
 
-      - name: Upload artifact
+      - name: Upload the snap
         if: steps.tree.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
