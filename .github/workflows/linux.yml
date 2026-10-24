@@ -109,8 +109,13 @@ jobs:
             done
             return 1
           }
-          retry apt-get -o Acquire::Retries=5 update
-          retry apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
+          # On failure the tail of the output goes to the job summary, which is readable from
+          # outside the Actions UI where the full log is not.
+          if ! retry apt-get -o Acquire::Retries=5 update > /tmp/apt-update.log 2>&1; then
+            { echo '### apt-get update failed'; echo '```'; tail -n 60 /tmp/apt-update.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          if ! retry apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
             ca-certificates curl wget git sudo zip unzip xz-utils \
             build-essential cmake ninja-build dpkg \
             file patchelf zstd libfuse2 openssl \
@@ -118,7 +123,10 @@ jobs:
             libxcb-cursor0 libgl1-mesa-dev libxcb1-dev libgtk-3-dev libxkbcommon-x11-dev \
             libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev \
             libxcb-shape0-dev libxcb-xfixes0-dev libxcb-xinerama0-dev libxcb-sync-dev \
-            libxcb-render-util0-dev libxcb-shm0-dev
+            libxcb-render-util0-dev libxcb-shm0-dev > /tmp/apt-install.log 2>&1; then
+            { echo '### apt-get install failed'; echo '```'; grep -E '^(E|W):' /tmp/apt-install.log | head -n 20; echo '--- tail ---'; tail -n 60 /tmp/apt-install.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
           git config --global --add safe.directory '*'
           echo "--- toolchain (glibc should be ${{ matrix.glibc_max }}) ---"
           gcc --version | head -1
