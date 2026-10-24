@@ -46,10 +46,19 @@ jobs:
         with:
           submodules: recursive
 
+      # seanmiddleditch/gha-setup-ninja runs on Node.js 20, which GitHub now force-runs on Node.js
+      # 24 and reports as deprecated; its newest release has the same problem. Ninja is a single
+      # executable, so it is fetched directly instead.
       - name: Setup ninja
-        uses: seanmiddleditch/gha-setup-ninja@v5
-        with:
-          version: 1.10.2
+        shell: pwsh
+        run: |
+          $ninjaVersion = "1.13.2"
+          $dir = "$env:RUNNER_TEMP\ninja"
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          Invoke-WebRequest -Uri "https://github.com/ninja-build/ninja/releases/download/v$ninjaVersion/ninja-win.zip" -OutFile "$env:RUNNER_TEMP\ninja.zip"
+          Expand-Archive -Path "$env:RUNNER_TEMP\ninja.zip" -DestinationPath $dir -Force
+          Add-Content -Path $env:GITHUB_PATH -Value $dir
+          & "$dir\ninja.exe" --version
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
