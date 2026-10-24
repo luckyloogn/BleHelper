@@ -88,17 +88,18 @@ jobs:
 
       - name: Install container prerequisites
         run: |
-          # The public archive stalls now and then, which made this step fail at random. The
-          # hosted runners sit in Azure, so point apt at the same mirror they use themselves.
-          # 22.04 keeps a plain sources.list, 24.04 uses .sources files.
+          echo "### prerequisites: step started" >> "$GITHUB_STEP_SUMMARY"
+          # The public archive stalls now and then. The hosted runners sit in Azure, so point
+          # apt at the mirror they use themselves. 22.04 keeps a plain sources.list, 24.04 uses
+          # .sources files. None of this is allowed to fail the step on its own.
           MIRROR_SED='s|https\?://archive.ubuntu.com/ubuntu|http://azure.archive.ubuntu.com/ubuntu|g; s|https\?://security.ubuntu.com/ubuntu|http://azure.archive.ubuntu.com/ubuntu|g'
           if [ -f /etc/apt/sources.list ]; then
-            sed -i "$MIRROR_SED" /etc/apt/sources.list
+            sed -i "$MIRROR_SED" /etc/apt/sources.list || true
           fi
           for f in /etc/apt/sources.list.d/*.sources; do
-            if [ -f "$f" ]; then sed -i "$MIRROR_SED" "$f"; fi
+            if [ -f "$f" ]; then sed -i "$MIRROR_SED" "$f" || true; fi
           done
-          grep -rhE '^(deb|URIs:)' /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null | head -n 5 || true
+          echo "### prerequisites: sources updated" >> "$GITHUB_STEP_SUMMARY"
 
           # belt and braces, in case a mirror still hiccups
           retry() {
@@ -115,6 +116,7 @@ jobs:
             { echo '### apt-get update failed'; echo '```'; tail -n 60 /tmp/apt-update.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
+          echo "### prerequisites: apt-get update ok" >> "$GITHUB_STEP_SUMMARY"
           if ! retry apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
             ca-certificates curl wget git sudo zip unzip xz-utils \
             build-essential cmake ninja-build dpkg \
