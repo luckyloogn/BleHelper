@@ -23,7 +23,7 @@ env:
   # Version used in the file names: the tag on a tag build. Branch and pull request builds are
   # never released, and their ref name ("fix/something") contains a slash, which cannot appear
   # in a file name, so they get a build number instead.
-  appVersion: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('dev-{0}', github.run_number) }}
+  appVersion: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('dev_{0}', github.run_number) }}
 
 jobs:
   build:
@@ -224,15 +224,17 @@ jobs:
           # installed by the "Install linuxdeploy" step above
           LINUXDEPLOY=$(command -v linuxdeploy)
           "$LINUXDEPLOY" --plugin=qt --output=appimage --create-desktop-file --icon-file=./dist/${{ env.targetName }}.svg --executable=./dist/${{ env.targetName }} --appdir ./dist/
-          # AppImage naming convention: <Name>-<Version>-<Arch>.AppImage, must not contain "linux"
-          mv ${{ env.targetName }}-*.AppImage ./package/${{ env.fileBase }}-${{ env.PKG_VERSION }}-${{ matrix.deploy_arch }}.AppImage
+          # AppImage naming convention: <Name>-<Version>-<Arch>.AppImage, must not contain "linux".
+          # Underscores are used as the separator so that all formats read as one set of names;
+          # the appimage.github.io scripts treat "-", "_" and "." alike when they pick the file.
+          mv ${{ env.targetName }}-*.AppImage ./package/${{ env.fileBase }}_${{ env.PKG_VERSION }}_${{ matrix.deploy_arch }}.AppImage
 
       # Unpacks the AppImage once: the payload is what the other formats are built from, so they
       # ship exactly the same files, and the GLIBC versions it needs can be checked here.
       - name: Unpack and check the AppImage payload
         run: |
-          chmod +x ./package/${{ env.fileBase }}-${{ env.PKG_VERSION }}-${{ matrix.deploy_arch }}.AppImage
-          ./package/${{ env.fileBase }}-${{ env.PKG_VERSION }}-${{ matrix.deploy_arch }}.AppImage --appimage-extract > /dev/null
+          chmod +x ./package/${{ env.fileBase }}_${{ env.PKG_VERSION }}_${{ matrix.deploy_arch }}.AppImage
+          ./package/${{ env.fileBase }}_${{ env.PKG_VERSION }}_${{ matrix.deploy_arch }}.AppImage --appimage-extract > /dev/null
           echo "=== GLIBC versions referenced by the bundle (must not exceed ${{ matrix.glibc_max }}) ==="
           find squashfs-root/usr/bin squashfs-root/usr/lib -type f \
             \( -name '*.so*' -o -path '*/usr/bin/*' \) \
@@ -261,14 +263,14 @@ jobs:
       - name: Upload the AppImage
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.fileBase }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}-appimage
+          name: ${{ env.fileBase }}_${{ env.PKG_VERSION }}_${{ matrix.arch }}_appimage
           path: ./package/*.AppImage
           if-no-files-found: error
 
       - name: Upload the Debian package
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.fileBase }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}-deb
+          name: ${{ env.fileBase }}_${{ env.PKG_VERSION }}_${{ matrix.arch }}_deb
           path: ./package/*.deb
           if-no-files-found: error
 
@@ -276,7 +278,7 @@ jobs:
       - name: Upload the snap tree
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.fileBase }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}-snap-tree
+          name: ${{ env.fileBase }}_${{ env.PKG_VERSION }}_${{ matrix.arch }}_snap_tree
           path: ./snap-tree.tar.gz
           if-no-files-found: error
 
@@ -321,7 +323,7 @@ jobs:
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
-          name: ${{ env.fileBase }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}-snap-tree
+          name: ${{ env.fileBase }}_${{ env.PKG_VERSION }}_${{ matrix.arch }}_snap_tree
 
       - name: Pack the snap
         if: steps.tree.outcome == 'success'
@@ -346,7 +348,7 @@ jobs:
         if: steps.tree.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.fileBase }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}-snap
+          name: ${{ env.fileBase }}_${{ env.PKG_VERSION }}_${{ matrix.arch }}_snap
           path: ./snap-out/*.snap
           if-no-files-found: error
 

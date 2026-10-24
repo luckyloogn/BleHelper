@@ -21,7 +21,7 @@ env:
   # Version used in the file names: the tag on a tag build. Branch and pull request builds are
   # never released, and their ref name ("fix/something") contains a slash, which cannot appear
   # in a file name, so they get a build number instead.
-  appVersion: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('dev-{0}', github.run_number) }}
+  appVersion: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('dev_{0}', github.run_number) }}
 
 jobs:
   build:
@@ -136,7 +136,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path package | Out-Null
-          $zip = "package/${{ env.fileName }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}.zip"
+          $zip = "package/${{ env.fileName }}_${{ env.PKG_VERSION }}_${{ matrix.arch }}.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path dist/* -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -144,7 +144,7 @@ jobs:
       - name: Upload the portable zip
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.fileName }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}-zip
+          name: ${{ env.fileName }}_${{ env.PKG_VERSION }}_${{ matrix.arch }}_zip
           path: package/*.zip
           if-no-files-found: error
 
@@ -159,7 +159,7 @@ jobs:
         if: startsWith(github.event.ref, 'refs/tags/')
         shell: pwsh
         run: |
-          $installer = "package/${{ env.fileName }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}-setup.exe"
+          $installer = "package/${{ env.fileName }}_${{ env.PKG_VERSION }}_${{ matrix.arch }}_setup.exe"
           Move-Item -Path "package/installer.exe" -Destination $installer -Force
           Get-Item $installer | Select-Object Name, Length
 
@@ -167,8 +167,8 @@ jobs:
         if: startsWith(github.event.ref, 'refs/tags/')
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.fileName }}-${{ env.PKG_VERSION }}-${{ matrix.arch }}-installer
-          path: package/*-setup.exe
+          name: ${{ env.fileName }}_${{ env.PKG_VERSION }}_${{ matrix.arch }}_installer
+          path: package/*_setup.exe
           if-no-files-found: error
 
       - name: Upload release (portable zip)
@@ -186,7 +186,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: package/*-setup.exe
+          file: package/*_setup.exe
           file_glob: true
           tag: ${{ github.ref }}
           overwrite: true
