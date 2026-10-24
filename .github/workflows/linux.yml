@@ -106,7 +106,7 @@ jobs:
           ldd --version | head -1
 
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -141,10 +141,21 @@ jobs:
           # ubuntu:22.04 container. The venv prepared above is used instead.
           setup-python: 'false'
 
-      - name: Install Qt linux deploy
-        uses: miurahr/install-linuxdeploy-action@v1
-        with:
-          plugins: qt appimage
+      # miurahr/install-linuxdeploy-action still runs on Node.js 20, which GitHub now force-runs on
+      # Node.js 24 and reports as deprecated; its newest release has the same problem. It only
+      # downloads three AppImages, so they are fetched directly instead. That also drops the
+      # action's dependency on wget, which the slim container image does not ship.
+      - name: Install linuxdeploy
+        run: |
+          mkdir -p "$RUNNER_TEMP/linuxdeploy"
+          cd "$RUNNER_TEMP/linuxdeploy"
+          for tool in linuxdeploy linuxdeploy-plugin-qt linuxdeploy-plugin-appimage; do
+            curl -fsSL --retry 3 --retry-delay 5 -o "$tool" \
+              "https://github.com/linuxdeploy/$tool/releases/download/continuous/$tool-${{ matrix.deploy_arch }}.AppImage"
+            chmod +x "$tool"
+          done
+          echo "$RUNNER_TEMP/linuxdeploy" >> "$GITHUB_PATH"
+          ls -l
 
       - name: Build the project
         run: |
@@ -177,8 +188,8 @@ jobs:
         run: |
           # make sure Qt plugin finds QML sources so it can deploy the imported files
           export QML_SOURCES_PATHS=./
-          # the tool is named after the architecture it was downloaded for
-          LINUXDEPLOY=$(command -v linuxdeploy-${{ matrix.deploy_arch }}.AppImage || command -v linuxdeploy)
+          # installed by the "Install linuxdeploy" step above
+          LINUXDEPLOY=$(command -v linuxdeploy)
           "$LINUXDEPLOY" --plugin=qt --output=appimage --create-desktop-file --icon-file=./dist/${{ env.targetName }}.svg --executable=./dist/${{ env.targetName }} --appdir ./dist/
           # AppImage naming convention: <Name>-<Version>-<Arch>.AppImage, must not contain "linux"
           mv ${{ env.targetName }}-*.AppImage ./package/${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.deploy_arch }}.AppImage
@@ -215,14 +226,14 @@ jobs:
       # names (amd64 / arm64) used consistently, so the list in the Actions UI reads as one set.
       # Only the files inside are named according to their own format's convention.
       - name: Upload the AppImage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.arch }}-appimage
           path: ./package/*.AppImage
           if-no-files-found: error
 
       - name: Upload the Debian package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.arch }}-deb
           path: ./package/*.deb
@@ -230,7 +241,7 @@ jobs:
 
       # Intermediate product: the tree that the "snap" job turns into a .snap
       - name: Upload the snap tree
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.arch }}-snap-tree
           path: ./snap-tree.tar.gz
@@ -270,7 +281,7 @@ jobs:
       - name: Download the snap tree
         id: tree
         continue-on-error: true
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.arch }}-snap-tree
 
@@ -296,7 +307,7 @@ jobs:
 
       - name: Upload the snap
         if: steps.tree.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.targetName }}-${{ env.appVersion }}-${{ matrix.arch }}-snap
           path: ./snap-out/*.snap
